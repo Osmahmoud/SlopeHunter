@@ -16,8 +16,6 @@ Sh.Model <- slopehunter(dat = data_example, xbeta_col="xbeta", xse_col="xse",
                         comp.size = seq(0.03, 0.10, 0.01), xp.thresh = 0.1, coef.diff = 1,
                         correct.reg.dill = TRUE, show_adjustments = TRUE, seed=2019)
 
-
-
 Sh.Model$Sh.b
 Adj <- Sh.Model$Estimates
 head(Adj)
@@ -30,3 +28,7 @@ Adj_sh <- SHadj(Sh.Model, dat = data_example, xbeta_col = "xbeta", xse_col = "xs
 head(Adj_sh)
 ?slopehunter
 plot(Sh.Model)
+
+# Install it from Github
+devtools::install_github("Osmahmoud/SlopeHunter")
+require(SlopeHunter)
