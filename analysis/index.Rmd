@@ -1,5 +1,7 @@
 ---
-title: "Home"
+title: "Introduction to Slope-Hunter"
+author: "Osama Mahmoud"
+date: "July 23, 2020"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -8,4 +10,4 @@ editor_options:
   chunk_output_type: console
 ---
 
-Welcome to my research website.
+# Weclome to the Slope-Hunter website!
