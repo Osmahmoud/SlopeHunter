@@ -1,5 +1,6 @@
 ---
 title: "Introduction to Slope-Hunter"
+subtitle: "An approach for collider bias correction in GWAS of subsequent traits"
 author: "Osama Mahmoud"
 date: "July 23, 2020"
 site: workflowr::wflow_site
@@ -12,7 +13,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Welcome to the Slope-Hunter website!
+# Welcome to Slope-Hunter website!
 **Slope-Hunter: An approach for collider bias correction in Genome-Wide Association Studies (GWAS) of subsequent traits**
 
 This website layout was inspired by the [CAUSE website](https://jean997.github.io/cause/index.html) layout.
