@@ -5,7 +5,8 @@ date: "July 23, 2020"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
-    toc: false
+    bibliography: sh.bib
+    toc: true
 editor_options:
   chunk_output_type: console
 ---
@@ -17,7 +18,7 @@ This website layout was inspired by the [CAUSE website layout](https://jean997.g
 
 Here are some useful links:
 
- [Pre-print of the manuscript](https://www.biorxiv.org/content/10.1101/682237v3)
+ [Pre-print of the manuscript](https://www.biorxiv.org/content/10.1101/2020.01.31.928077v1)
  
  [R package source](https://github.com/Osmahmoud/Slope-Hunter)
 
