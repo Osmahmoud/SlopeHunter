@@ -1,11 +1,25 @@
 Package: SlopeHunter
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Slope-Hunter: A ROBUST METHOD FOR INDEX-EVENT BIAS CORRECTION IN GENOME-WIDE ASSOCIATION STUDIES OF SUBSEQUENT TRAITS
+Version: 0.0.1
+Date: 2020-07-23
+Author@R: person("Osama", "Mahmoud", email = "o.mahmoud@essex.ac.uk",
+                 role = c("aut", "cre", "cph"),
+                 comment = c(ORCID = "0000-0003-0342-6704"))
+Description: Studying genetic associations with prognosis (e.g. survival, disability, subsequent disease events) is
+    problematic due to selection bias - also termed index event bias or collider bias - whereby selection on disease
+    status can induce associations between causes of incidence with prognosis. The Slope-Hunter approach adjusts 
+    genetic associations for this bias assuming that the contribution of the set of genetic variants affecting incidence
+    only to the heritability of incidence is at least as large as the contribution of those affecting both incidence and prognosis.
+License: GPL-2 | GPL-3
+URL: http://osmahmoud.com/SlopeHunter/
 Encoding: UTF-8
 LazyData: true
+Depends: R (>= 3.5.0)
+Imports: ggplot2 (>= 2.1.0), mclust, plotly, stats
+Suggests: knitr (>= 1.12), rmarkdown (>= 0.9)
+VignetteBuilder: knitr
+RoxygenNote: 7.1.0
+Repository: Osmahmoud
+Author: Osama Mahmoud [aut, cre, cph](<https://orcid.org/0000-0003-0342-6704>)
+Maintainer: Osama Mahmoud <o.mahmoud@essex.ac.uk>
