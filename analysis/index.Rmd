@@ -11,3 +11,22 @@ editor_options:
 ---
 
 # Weclome to the Slope-Hunter website!
+## An approach for collider bias correction in Genome-Wide Association Studies (GWAS) of subsequent traits
+
+This website layout was inspired by the [CAUSE website layout](https://jean997.github.io/cause/index.html).
+
+Here are some useful links:
+
+ [Pre-print of the manuscript](https://www.biorxiv.org/content/10.1101/682237v3)
+ 
+ [R package source](https://github.com/Osmahmoud/Slope-Hunter)
+
+# Introduction to Slope-Hunter
+
+Studying genetic associations with prognosis (e.g. survival, disability, subsequent disease events) is
+problematic due to selection bias - also termed index event bias or collider bias - whereby selection
+on disease status can induce associations between causes of incidence with prognosis.
+
+The ‘Slope-Hunter’ approach is proposed for adjusting genetic associations for this bias. The approach is unbiased even when there is genetic correlation between incidence and prognosis.
+
+Our approach has two stages. First, cluster-based techniques are used to identify: variants affecting neither incidence nor prognosis (these should not suffer bias and only a random sub-sample of them are retained in the analysis); variants affecting prognosis only (excluded from the analysis). Second, we fit a cluster-based model to identify the class of variants only affecting incidence, and use this class to estimate the adjustment factor.
