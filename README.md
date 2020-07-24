@@ -2,7 +2,7 @@
 
 This R package implements the Slope-Hunter method described in [Mahmoud et al. 2020](https://www.biorxiv.org/content/10.1101/2020.01.31.928077v1). Tutorials on the software usage can be viewed from the [Slope-Hunter website](http://osmahmoud.com/SlopeHunter/).
 
-For bug reports, feature requests, and questions on technical issues of using the software, please open an [Issue](../issues).
+For bug reports, feature requests, and questions on technical issues of using the software, please open an [Issue](/issues).
 
 ## Installation instructions:
 
