@@ -24,8 +24,7 @@ incidence only, 5% (500 variables) on prognosis only, and 5% have correlated eff
 coeficient of '-0.5'. The estimates are obtained from linear regression in a simulated dataset of 20,000 individuals.
 }
 \examples{
-# Default analysis with Hedges-Olkin adjustment for regression dilution
-# Does not calculate a standard error
+# Implement the Slope-Hunter method
 Sh.Model <- slopehunter(dat = data_example, xbeta_col="xbeta", xse_col="xse",
                         ybeta_col="ybeta", yse_col="yse", yp_col="yp",
                         comp.size = seq(0.03, 0.10, 0.01), xp.thresh = 0.1, coef.diff = 1,
@@ -35,15 +34,25 @@ Sh.Model <- slopehunter(dat = data_example, xbeta_col="xbeta", xse_col="xse",
 # [1] "SE of the slope: 0.0143848328056302"
 # [1] "95\% CI: -0.286896124788896, -0.230507580190826"
 
+# Display the estimated slope (adjustment factor)
 Sh.Model$Sh.b
 # [1] -0.2587019
 
+# Extract resulted data with adjusted estimates and information of SNPs included in the analysis
 #' Adj <- Sh.Model$Estimates
+
+# Show the first 6 values of the unadjusted estimated effects on prognosis
 head(Adj$ybeta)
 # [1] -0.0092889266  0.0005575032  0.0112203795 -0.0095533069  0.0082635203  0.0026550045
+
+# Show the first 6 values of the adjusted estimated effects on prognosis
 head(Adj$ybeta.Adj)
 # [1] -0.011184217  0.004265600  0.008185743 -0.008299934  0.001626433  0.006175507
+
+# Generate an interactive plot for the estimated clusters (hover on the data points to view info)
 plot(Sh.Model, what = "clusters")
-plot(Sh.Model, what = "classification")
+
+# Generate plot for classification uncertainty
+plot(Sh.Model, what = "uncertainty")
 }
 \keyword{datasets}
