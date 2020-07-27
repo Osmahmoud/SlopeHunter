@@ -26,11 +26,11 @@ read_prognosis = function(filename, gz = TRUE, sep= " ", snp_col="SNP", beta_col
                           pval_col="PVAL", eaf_col="EAF", effect_allele_col="EA",
                           other_allele_col="OA", gene_col="GENE", chr_col = "CHR", pos_col="POS",
                           min_pval=1e-200, log_pval=FALSE){
-  
-  if(gz){prognosis_dat <- read.table(gzfile(filename), header = TRUE)} else {
+
+  if(gz){prognosis_dat <- utils::read.table(gzfile(filename), header = TRUE)} else {
     prognosis_dat <- data.table::fread(filename, header=TRUE, sep=sep)
   }
-  
+
   prognosis_dat <- format_data(
     as.data.frame(prognosis_dat),
     type="prognosis",
