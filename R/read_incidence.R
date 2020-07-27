@@ -27,7 +27,7 @@ read_incidence = function(filename, gz = TRUE, sep= " ", snp_col="SNP", beta_col
                           other_allele_col="OA", gene_col="GENE", chr_col = "CHR", pos_col="POS",
                           min_pval=1e-200, log_pval=FALSE){
 
-  if(gz){incidence_dat <- read.table(gzfile(filename), header = TRUE)} else {
+  if(gz){incidence_dat <- utils::read.table(gzfile(filename), header = TRUE)} else {
     incidence_dat <- data.table::fread(filename, header=TRUE, sep=sep)
   }
 
