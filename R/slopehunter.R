@@ -42,7 +42,7 @@
 #' \item adjusted effect sizes, their standard errors and p-values (only if \code{show_adjustments} is TRUE).
 #' }
 #' \item Iterations: Details of the iterations.
-#' \Item Model: the fitted model.
+#' \item Model: the fitted model.
 #' \item b.raw: The estimated slope (adjustment factor).
 #' \item Sh.b: The estimated slope adjusted for regression dilution, if `correct.reg.dill` is TRUE.
 #' \item bse: Standard error of the estimated slope.
