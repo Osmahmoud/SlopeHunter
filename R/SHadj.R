@@ -7,6 +7,7 @@
 #' @param ybeta_col Required name of column with unadjusted effects on the prognosis trait.
 #' @param yse_col Required name of column with standard errors of \code{ybeta}.
 #'
+#' @importFrom stats pchisq
 #' @return data.frame with adjusted estimates
 #' @export
 
