@@ -30,7 +30,7 @@
 #' # [1] -0.2587019
 #'
 #' # Extract resulted data with adjusted estimates and information of SNPs included in the analysis
-#' #' Adj <- Sh.Model$Estimates
+#' Adj <- Sh.Model$Estimates
 #'
 #' # Show the first 6 values of the unadjusted estimated effects on prognosis
 #' head(Adj$ybeta)
