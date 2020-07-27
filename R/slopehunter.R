@@ -21,6 +21,7 @@
 #' @importFrom mclust Mclust mclustBIC
 #' @importFrom plotly ggplotly
 #' @import ggplot2
+#' @importFrom stats dist pchisq lm
 #'
 #' @export
 #'
