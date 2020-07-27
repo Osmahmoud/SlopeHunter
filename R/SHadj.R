@@ -36,7 +36,7 @@ SHadj = function(x, dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="SE.
 
   dat$ybeta.adj <- dat$ybeta - Sh.b * dat$xbeta
   dat$yse.adj   <- sqrt(dat$yse^2 + (Sh.b^2 * dat$xse^2) + (bse^2 * dat$xbeta^2) + (bse^2 * dat$xse^2))
-  dat$yp.adj    <- pchisq((dat$ybeta.adj/dat$yse.adj)^2, 1, lower = F)
+  dat$yp.adj    <- pchisq((dat$ybeta.adj/dat$yse.adj)^2, 1, lower.tail = FALSE)
 
   return(dat)
 }
