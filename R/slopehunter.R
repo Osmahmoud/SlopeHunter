@@ -74,8 +74,8 @@ slopehunter = function(dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="
   if (!all(i))
   {
     message("The following column(s) is not present and will be generated:\n", paste(cols_desired[!i]))
-    if(!i[1]){dat[[xp_col]] = pchisq((dat[[xbeta_col]]/dat[[xse_col]])^2, 1, lower = F)}
-    if(!i[2]){dat[[yp_col]] = pchisq((dat[[ybeta_col]]/dat[[yse_col]])^2, 1, lower = F)}
+    if(!i[1]){dat[[xp_col]] = pchisq((dat[[xbeta_col]]/dat[[xse_col]])^2, 1, lower.tail = FALSE)}
+    if(!i[2]){dat[[yp_col]] = pchisq((dat[[ybeta_col]]/dat[[yse_col]])^2, 1, lower.tail = FALSE)}
     if(!i[3]){dat[[snp_col]] = paste0("snp", 1:nrow(dat))}
   }
 
@@ -95,13 +95,13 @@ slopehunter = function(dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="
   xSigma <- x.Stand$Sigma
   InData$xbeta <- x.Stand$beta.std
   InData$xse   <- x.Stand$se.std
-  InData$xp    <- pchisq((InData$xbeta/InData$xse)^2, 1, lower = F)
+  InData$xp    <- pchisq((InData$xbeta/InData$xse)^2, 1, lower.tail = FALSE)
 
   y.Stand <- std(beta = InData$ybeta, se = InData$yse)
   ySigma <- y.Stand$Sigma
   InData$ybeta <- y.Stand$beta.std
   InData$yse   <- y.Stand$se.std
-  InData$yp    <- pchisq((InData$ybeta/InData$yse)^2, 1, lower = F)
+  InData$yp    <- pchisq((InData$ybeta/InData$yse)^2, 1, lower.tail = FALSE)
 
   ### Phase 1: Identify SNPs neither affect x nor y (noisy) ###
   set.seed(seed)
@@ -237,7 +237,7 @@ slopehunter = function(dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="
     ##### Adjust
     Res$ybeta.Adj <- Res$ybeta - (Sh.b * Res$xbeta)
     Res$yse.Adj = sqrt(Res$yse^2 + Sh.b^2 * Res$xse^2)
-    Res$yp.Adj = pchisq((Res$ybeta.Adj/Res$yse.Adj)^2, 1, lower = F)
+    Res$yp.Adj = pchisq((Res$ybeta.Adj/Res$yse.Adj)^2, 1, lower.tail = FALSE)
   }
 
   Res <- Res[,-which(names(Res) %in% "Fitclass")]
