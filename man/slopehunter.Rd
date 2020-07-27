@@ -23,7 +23,7 @@ slopehunter(
 )
 }
 \arguments{
-\item{dat}{Data frame. Must have header with at least the `xbeta`, `xse`, `ybeta` and `yse` columns present.}
+\item{dat}{Data frame. Must have header with at least the \code{xbeta}, \code{xse}, \code{ybeta} and \code{yse} columns present.}
 
 \item{snp_col}{Name of column with SNP IDs.}
 
@@ -40,7 +40,7 @@ slopehunter(
 \item{yp_col}{Name of column with p-value for \code{ybeta} (optional). If not given, It will be inferred from \code{ybeta} and \code{yse}.}
 
 \item{comp.size}{Vector of complementary set sizes as a proportion of the noisy SNPs (neither affecting incidence nor subsequent traits).
-The function will iteratively fit the `slopehunter` model using each of these sizes.}
+The function will iteratively fit the \code{slopehunter} model using each of these sizes.}
 
 \item{xp.thresh}{p-value threshold for SNP-incidence associations. Effects with p-values higher than th\code{xp.thresh} will be dropped from the analysis.}
 
@@ -64,20 +64,20 @@ List of the following:
 \itemize{
 \item status of the variants defined as follows:
 \itemize{
-\item `G4-Drop`: assigned to the noisy cluster (excluded from the analysis).
-\item `G3-Drop` = assigned to the cluster affecting prognosis with no effect on incidence (excluded from the analysis).
-\item `G1` = the target cluster.
-\item `G2` = assigned to the cluster affecting both incidence and prognosis - i.e. variants with pleiotropic effect.
-\item `G1-Retained` = Retained from the excluded G4 cluster and assigned to the target cluster.
-\item `G2-Retained` = Retained from the excluded G4 cluster and assigned to the cluster affecting both incidence and prognosis traits).
+\item \code{G4-Drop}: assigned to the noisy cluster (excluded from the analysis).
+\item \code{G3-Drop} = assigned to the cluster affecting prognosis with no effect on incidence (excluded from the analysis).
+\item \code{G1} = the target cluster.
+\item \code{G2} = assigned to the cluster affecting both incidence and prognosis - i.e. variants with pleiotropic effect.
+\item \code{G1-Retained} = Retained from the excluded G4 cluster and assigned to the target cluster.
+\item \code{G2-Retained} = Retained from the excluded G4 cluster and assigned to the cluster affecting both incidence and prognosis traits).
 }
 \item membership probabilities of the vaiants based on which they are assigned to the target cluster (obviously these are calculated for only the variants included in the analysis)
 \item adjusted effect sizes, their standard errors and p-values (only if \code{show_adjustments} is TRUE).
 }
 \item Iterations: Details of the iterations.
-\Item Model: the fitted model.
+\item Model: the fitted model.
 \item b.raw: The estimated slope (adjustment factor).
-\item Sh.b: The estimated slope adjusted for regression dilution, if `correct.reg.dill` is TRUE.
+\item Sh.b: The estimated slope adjusted for regression dilution, if \code{correct.reg.dill} is TRUE.
 \item bse: Standard error of the estimated slope.
 }
 }

@@ -7,11 +7,11 @@
 \format{
 A data frame with 10,000 rows and 5 variables:
 \describe{
-  \item{xbeta}{Regression coefficient on incidence}
-  \item{xse}{Standard error of \code{xbeta}}
-  \item{ybeta}{Regression coefficient on prognosis}
-  \item{yse}{Standard error of \code{ybeta}}
-  \item{yp}{P-value of the association with prognosis}
+\item{xbeta}{Regression coefficient on incidence}
+\item{xse}{Standard error of \code{xbeta}}
+\item{ybeta}{Regression coefficient on prognosis}
+\item{yse}{Standard error of \code{ybeta}}
+\item{yp}{P-value of the association with prognosis}
 }
 }
 \usage{
@@ -19,8 +19,8 @@ data_example
 }
 \description{
 A simulated dataset for 10,000 independent variables (e.g. SNPs) consisting of regression coefficients on
-incidence and prognosis, with their standard errors. Among them, 5% (500 variables) have effects on
-incidence only, 5% (500 variables) on prognosis only, and 5% have correlated effects on both with a correlation
+incidence and prognosis, with their standard errors. Among them, 5\% (500 variables) have effects on
+incidence only, 5\% (500 variables) on prognosis only, and 5\% have correlated effects on both with a correlation
 coeficient of '-0.5'. The estimates are obtained from linear regression in a simulated dataset of 20,000 individuals.
 }
 \examples{
@@ -39,7 +39,7 @@ Sh.Model$Sh.b
 # [1] -0.2587019
 
 # Extract resulted data with adjusted estimates and information of SNPs included in the analysis
-#' Adj <- Sh.Model$Estimates
+Adj <- Sh.Model$Estimates
 
 # Show the first 6 values of the unadjusted estimated effects on prognosis
 head(Adj$ybeta)
