@@ -19,6 +19,7 @@
 #' @param min_pval Minimum allowed p-value. The default is `1e-200`.
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
+#' @importFrom data.table fread
 #' @export
 #' @return data frame
 read_prognosis = function(filename, gz = TRUE, sep= " ", snp_col="SNP", beta_col="BETA", se_col="SE",
