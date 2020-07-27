@@ -6,3 +6,4 @@
 ^code$
 ^output$
 ^_workflowr.yml$
+^Build_software.R$
