@@ -20,6 +20,7 @@
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
 #' @importFrom data.table fread
+#' @importFrom utils read.table
 #' @export
 #' @return data frame
 read_incidence = function(filename, gz = TRUE, sep= " ", snp_col="SNP", beta_col="BETA", se_col="SE",
