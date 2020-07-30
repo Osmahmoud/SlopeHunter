@@ -19,6 +19,8 @@
 #' @param min_pval Minimum allowed p-value. The default is `1e-200`.
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
+#' @importFrom data.table fread
+#' @importFrom utils read.table
 #' @export
 #' @return data frame
 read_incidence = function(filename, gz = TRUE, sep= " ", snp_col="SNP", beta_col="BETA", se_col="SE",
@@ -26,7 +28,7 @@ read_incidence = function(filename, gz = TRUE, sep= " ", snp_col="SNP", beta_col
                           other_allele_col="OA", gene_col="GENE", chr_col = "CHR", pos_col="POS",
                           min_pval=1e-200, log_pval=FALSE){
 
-  if(gz){incidence_dat <- read.table(gzfile(filename), header = TRUE)} else {
+  if(gz){incidence_dat <- utils::read.table(gzfile(filename), header = TRUE)} else {
     incidence_dat <- data.table::fread(filename, header=TRUE, sep=sep)
   }
 

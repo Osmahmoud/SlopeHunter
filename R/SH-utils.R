@@ -15,6 +15,7 @@ Euclid.dist = function(x, y, ydominant = FALSE){
   }
 }
 
+#' @importFrom stats var
 hOlkin.adj <- function(Data, b.raw, xbeta, xse, G1.class)
 {
   Dat <- subset(Data, Fitclass == G1.class)
@@ -23,6 +24,7 @@ hOlkin.adj <- function(Data, b.raw, xbeta, xse, G1.class)
   b.raw * Vx / cVx
 }
 
+#' @importFrom stats sd
 std <- function(beta, se)
 {
   Mu <- mean(beta, na.rm = TRUE)
@@ -41,6 +43,7 @@ std <- function(beta, se)
 #' "uncertainty": A plot of classification uncertainty.
 #' "density": A plot of estimated density.
 #' @export
+#' @importFrom utils menu
 plot.SH <- function(x, what= c("clusters", "classification", "uncertainty", "density"),
                     dimens = NULL, xlab = NULL, ylab = NULL, addEllipses = TRUE, main = FALSE,
                     ...){

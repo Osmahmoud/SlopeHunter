@@ -4,7 +4,7 @@ citEntry(entry = "Article",
   title = "Slope-Hunter: A robust method for index-event bias correction in genome-wide association studies of subsequent traits",
   author = personList(person(given="Osama", family="Mahmoud"),
                       person(given="Frank", family="Dudbridge"),
-                      person(given=c("George", "Davey"), family="Smith"),
+                      person(given="George", family="Davey Smith"),
                       person(given="Marcus", family="Munafo"),
                       person(given="Kate", family="Tilling")),
   journal = "bioRxiv",
@@ -12,7 +12,7 @@ citEntry(entry = "Article",
   url="https://doi.org/10.1101/2020.01.31.928077",
   #
   textVersion =
-  paste("Mahmoud O., Dudbrige F., Smith G. D., Munafo M. and Tilling K (2020)",
+  paste("Mahmoud O., Dudbrige F., Davey Smith G., Munafo M. and Tilling K (2020)",
         "Slope-Hunter: A robust method for index-event bias correction in genome-wide association studies of subsequent traits",
         "bioRxiv",
         "https://doi.org/10.1101/2020.01.31.928077"))
