@@ -10,7 +10,8 @@
   xlab = NULL,
   ylab = NULL,
   addEllipses = TRUE,
-  main = FALSE
+  main = FALSE,
+  ...
 )
 }
 \arguments{
@@ -29,6 +30,8 @@
 \item{addEllipses}{A logical indicating whether or not to add ellipses with axes corresponding to the within-cluster covariances in case of "classification" or "uncertainty" plots.}
 
 \item{main}{A logical or NULL indicating whether or not to add a title to the plot identifying the type of plot drawn in case of "classification", "uncertainty", or "density" plots.}
+
+\item{...}{Other graphics parameters.}
 }
 \description{
 Plotting model for Slope-Hunter clustering
