@@ -29,6 +29,8 @@ harmonise_effects(
 
 \item{by.pos}{Logical, if \code{TRUE} the harmonisation will be performed by matching the exact SNP positions between the incidence and prognosis datasets.}
 
+\item{pos_cols}{A vector of length 2 specifying the name of the genetic position columns in the incidence and prognosis datasets respectively.}
+
 \item{snp_cols}{A vector of length 2 specifying the name of the snp columns in the incidence and prognosis datasets respectively. This is the column on which the data will be merged if \code{by.pos} is \code{FASLE}.}
 
 \item{beta_cols}{A vector of length 2 specifying the name of the beta columns in the incidence and prognosis datasets respectively.}

@@ -46,10 +46,11 @@ std <- function(beta, se)
 #' @param ylab Optional label for the y-axis in case of "classification", "uncertainty", or "density" plots.
 #' @param addEllipses A logical indicating whether or not to add ellipses with axes corresponding to the within-cluster covariances in case of "classification" or "uncertainty" plots.
 #' @param main A logical or NULL indicating whether or not to add a title to the plot identifying the type of plot drawn in case of "classification", "uncertainty", or "density" plots.
+#' @param ... Other graphics parameters.
 #' @export
 #' @importFrom utils menu
 plot.SH <- function(x, what= c("clusters", "classification", "uncertainty", "density"),
-                    xlab = NULL, ylab = NULL, addEllipses = TRUE, main = FALSE)
+                    xlab = NULL, ylab = NULL, addEllipses = TRUE, main = FALSE, ...)
 {
   object <- x
   if(!inherits(object, "SH"))

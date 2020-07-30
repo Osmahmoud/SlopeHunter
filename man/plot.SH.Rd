@@ -7,12 +7,10 @@
 \method{plot}{SH}(
   x,
   what = c("clusters", "classification", "uncertainty", "density"),
-  dimens = NULL,
   xlab = NULL,
   ylab = NULL,
   addEllipses = TRUE,
-  main = FALSE,
-  ...
+  main = FALSE
 )
 }
 \arguments{
@@ -23,6 +21,14 @@
 "classification": A plot showing point assigned to each cluster (class).
 "uncertainty": A plot of classification uncertainty.
 "density": A plot of estimated density.}
+
+\item{xlab}{Optional label for the x-axis in case of "classification", "uncertainty", or "density" plots.}
+
+\item{ylab}{Optional label for the y-axis in case of "classification", "uncertainty", or "density" plots.}
+
+\item{addEllipses}{A logical indicating whether or not to add ellipses with axes corresponding to the within-cluster covariances in case of "classification" or "uncertainty" plots.}
+
+\item{main}{A logical or NULL indicating whether or not to add a title to the plot identifying the type of plot drawn in case of "classification", "uncertainty", or "density" plots.}
 }
 \description{
 Plotting model for Slope-Hunter clustering
