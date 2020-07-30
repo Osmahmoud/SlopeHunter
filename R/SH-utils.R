@@ -42,11 +42,15 @@ std <- function(beta, se)
 #' "classification": A plot showing point assigned to each cluster (class).
 #' "uncertainty": A plot of classification uncertainty.
 #' "density": A plot of estimated density.
+#' @param xlab Optional label for the x-axis in case of "classification", "uncertainty", or "density" plots.
+#' @param ylab Optional label for the y-axis in case of "classification", "uncertainty", or "density" plots.
+#' @param addEllipses A logical indicating whether or not to add ellipses with axes corresponding to the within-cluster covariances in case of "classification" or "uncertainty" plots.
+#' @param main A logical or NULL indicating whether or not to add a title to the plot identifying the type of plot drawn in case of "classification", "uncertainty", or "density" plots.
 #' @export
 #' @importFrom utils menu
 plot.SH <- function(x, what= c("clusters", "classification", "uncertainty", "density"),
-                    dimens = NULL, xlab = NULL, ylab = NULL, addEllipses = TRUE, main = FALSE,
-                    ...){
+                    xlab = NULL, ylab = NULL, addEllipses = TRUE, main = FALSE)
+{
   object <- x
   if(!inherits(object, "SH"))
     stop("x is not of class \"SH\"!")
@@ -57,17 +61,17 @@ plot.SH <- function(x, what= c("clusters", "classification", "uncertainty", "den
     choice <- menu(what, graphics = FALSE, title = title)
     while(choice != 0){
       if(what[choice] == "clusters")       print(object$plot.clusters)
-      if(what[choice] == "classification") mclust::plot.Mclust(object$Model, what = "classification")
-      if(what[choice] == "uncertainty")    mclust::plot.Mclust(object$Model, what = "uncertainty")
-      if(what[choice] == "density")        mclust::plot.Mclust(object$Model, what = "density")
+      if(what[choice] == "classification") mclust::plot.Mclust(object$Model, what = "classification", xlab=xlab, ylab=ylab, addEllipses=addEllipses, main=main)
+      if(what[choice] == "uncertainty")    mclust::plot.Mclust(object$Model, what = "uncertainty", xlab=xlab, ylab=ylab, addEllipses=addEllipses, main=main)
+      if(what[choice] == "density")        mclust::plot.Mclust(object$Model, what = "density", xlab=xlab, ylab=ylab, main=main)
       # re-present menu waiting user choice
       choice <- menu(what, graphics = FALSE, title = title)
     }
   } else {
     if(any(what == "clusters"))       print(object$plot.clusters)
-    if(any(what == "classification")) mclust::plot.Mclust(object$Model, what = "classification")
-    if(any(what == "uncertainty"))    mclust::plot.Mclust(object$Model, what = "uncertainty")
-    if(any(what == "density"))        mclust::plot.Mclust(object$Model, what = "density")
+    if(any(what == "classification")) mclust::plot.Mclust(object$Model, what = "classification", xlab=xlab, ylab=ylab, addEllipses=addEllipses, main=main)
+    if(any(what == "uncertainty"))    mclust::plot.Mclust(object$Model, what = "uncertainty", xlab=xlab, ylab=ylab, addEllipses=addEllipses, main=main)
+    if(any(what == "density"))        mclust::plot.Mclust(object$Model, what = "density", xlab=xlab, ylab=ylab, main=main)
   }
   invisible()
 }

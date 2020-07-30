@@ -1,16 +1,17 @@
 #' Harmonise and format data for Slope-Hunter
-#' 
+#'
 #' Harmonise the alleles and effects between the incidence and prognosis
-#' 
+#'
 #' In order to perform Slope-Hunter analysis the effect of a SNP on an incidence and prognosis traits must be harmonised to be
 #' relative to the same allele.
-#'   
+#'
 #' @md
 #' @param incidence_dat data.frame with data for incidence. It is recommended to be an output from \code{read_incidence}. If not, it tries to format it before harmonisation.
 #' @param prognosis_dat data.frame with data for prognosis. It is recommended to be an output from \code{read_prognosis}. If not, it tries to format it before harmonisation.
 #' @param incidence_formatted Logical indicationg whether \code{incidence_dat} is formatted using \code{read_incidence}.
 #' @param prognosis_formatted Logical indicationg whether \code{prognosis_dat} is formatted using \code{read_prognosis}.
 #' @param by.pos Logical, if `TRUE` the harmonisation will be performed by matching the exact SNP positions between the incidence and prognosis datasets.
+#' @param pos_cols A vector of length 2 specifying the name of the genetic position columns in the incidence and prognosis datasets respectively.
 #' @param snp_cols A vector of length 2 specifying the name of the snp columns in the incidence and prognosis datasets respectively. This is the column on which the data will be merged if \code{by.pos} is `FASLE`.
 #' @param beta_cols A vector of length 2 specifying the name of the beta columns in the incidence and prognosis datasets respectively.
 #' @param se_cols A vector of length 2 specifying the name of the se columns in the incidence and prognosis datasets respectively.
@@ -19,7 +20,7 @@
 #' @details This function will try to harmonise the incidence and prognosis data sets on the specified columns. Where necessary, correct strand
 #' for non-palindromic SNPs (i.e. flip the sign of effects so that the effect allele is the same in both datasets), and drop all palindromic SNPs from the analysis (i.e. with the allele A/T or G/C).
 #' The alleles that do not match between data sets (e.g T/C in one data set and A/C in the other) will also be dropped.
-#' 
+#'
 #' @return A data.frame with harmonised effects and alleles
 #' @export
 
@@ -41,7 +42,7 @@ harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=
       pos_col=pos_cols[1]
     )
   }
-  
+
   if(!prognosis_formatted){
     message("Formatting prognosis\n")
     prognosis_dat <- format_data(
@@ -56,7 +57,7 @@ harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=
       pos_col=pos_cols[2]
     )
   }
-  
+
   if(!by.pos){
     message("Merging incidence and prognosis datasets by SNP ...")
     dat <- merge(incidence_dat, prognosis_dat, by="SNP")
@@ -64,11 +65,11 @@ harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=
     names(dat)[names(dat) == "CHR.incidence"] <- "CHR"
     names(dat)[names(dat) == "POS.incidence"] <- "POS"
   }
-  
+
   if(by.pos){
     message("Merging incidence and prognosis datasets by genomic position ...")
     dat <- merge(incidence_dat, prognosis_dat, by.x="POS.incidence", by.y="POS.prognosis")
-    
+
     # give unique names for common columns (e.g. SNP, CHR & POS)
     if(sum(grepl("^rs\\d+$", dat$SNP.x)) > sum(grepl("^rs\\d+$", dat$SNP.y))){
       names(dat)[names(dat) == "SNP.x"] <- "SNP"
@@ -78,7 +79,7 @@ harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=
     names(dat)[names(dat) == "CHR.incidence"] <- "CHR"
     names(dat)[names(dat) == "POS.incidence"] <- "POS"
   }
-  
+
   message("Harmonising effects and alleles ...")
   dat <- harmonise_dataset(dat)
   return(dat)
@@ -101,47 +102,47 @@ harmonise_dataset <- function(dat)
   pB=dat$PVAL.prognosis
   fA=dat$EAF.incidence
   fB=dat$EAF.prognosis
-  
+
   if(length(SNP) == 0) return(data.frame())
   jinfo <- list()
-  
+
   # indel recoding
   indel_index <- nchar(A1) > 1 | nchar(A2) > 1 | A1 == "D" | A1 == "I"
   temp <- recode_indels(A1[indel_index], A2[indel_index], B1[indel_index], B2[indel_index])
-  
+
   A1[indel_index] <- temp$A1
   A2[indel_index] <- temp$A2
   B1[indel_index] <- temp$B1
   B2[indel_index] <- temp$B2
   jinfo[['indel_kept']] <- sum(temp$keep)
   jinfo[['indel_removed']] <- sum(!temp$keep)
-  
+
   # Find SNPs with alleles that match in A and B (OK, e.g. A/C Vs. A/C)
   OK <- (A1 == B1) & (A2 == B2)
-  
+
   # Find SNPs with alleles in B need to swap (e.g. A/C Vs. C/A)
   to_swap <- (A1 == B2) & (A2 == B1)
   jinfo[['switched_alleles']] <- sum(to_swap)
-  
+
   # For B's alleles that need to swap, do swap
   Btemp <- B1[to_swap]
   B1[to_swap] <- B2[to_swap]
   B2[to_swap] <- Btemp
   betaB[to_swap] <- betaB[to_swap] * -1
   fB[to_swap] <- 1 - fB[to_swap]
-  
+
   # Check Again
   OK <- (A1 == B1) & (A2 == B2)
   palindromic <- is.palindromic(A1, A2)
   jinfo[['palindromic']] <- sum(palindromic)
-  
+
   # For 'NON-palindromic and alleles still DON'T match' (e.g. A/C Vs. T/G), do try flipping
   i <- !palindromic & !OK
   B1[i] <- flip_alleles(B1[i])
   B2[i] <- flip_alleles(B2[i])
   OK <- (A1 == B1) & (A2 == B2)
   jinfo[['flipped_alleles']] <- sum(i)
-  
+
   # If still DON'T match (e.g. A/C Vs. G/T, which - after flipping in the previous step - becomes A/C Vs. C/A) then try swapping
   i <- !palindromic & !OK
   to_swap <- (A1 == B2) & (A2 == B1)
@@ -151,20 +152,20 @@ harmonise_dataset <- function(dat)
   betaB[i & to_swap] <- betaB[i & to_swap] * -1
   fB[i & to_swap] <- 1 - fB[i & to_swap]
   jinfo[['flipped_then_switched_alleles']] <- sum(i & to_swap)
-  
+
   # Any SNPs left with unmatching alleles (e.g. A/C Vs. A/G) need to be removed
   OK <- (A1 == B1) & (A2 == B2)
   remove <- !OK
   remove[indel_index][!temp$keep] <- TRUE   # remove invalid indel recoding
-  
+
   # Remove palindromic SNPs
   remove[palindromic] <- TRUE
-  
+
   dat <- data.frame(SNP=SNP, Chr=Chr, POS=POS, EA.incidence=A1, OA.incidence=A2, EA.prognosis=B1, OA.prognosis=B2,
                     BETA.incidence=betaA, SE.incidence=seA, Pval.incidence=pA, EAF.incidence=fA,
                     BETA.prognosis=betaB, SE.prognosis=seB, Pval.prognosis=pB, EAF.prognosis=fB,
                     remove=remove, palindromic=palindromic)
-  
+
   attr(dat, "info") <- jinfo
   return(dat)
 }
@@ -193,45 +194,45 @@ recode_indels <- function(A1, A2, B1, B2)
   ncA2 <- nchar(A2)
   ncB1 <- nchar(B1)
   ncB2 <- nchar(B2)
-  
+
   i1 <- ncA1 > ncA2 & B1 == "I" & B2 == "D"
   B1[i1] <- A1[i1]
   B2[i1] <- A2[i1]
-  
+
   i1 <- ncA1 < ncA2 & B1 == "I" & B2 == "D"
   B1[i1] <- A2[i1]
   B2[i1] <- A1[i1]
-  
+
   i1 <- ncA1 > ncA2 & B1 == "D" & B2 == "I"
   B1[i1] <- A2[i1]
   B2[i1] <- A1[i1]
-  
+
   i1 <- ncA1 < ncA2 & B1 == "D" & B2 == "I"
   B1[i1] <- A1[i1]
   B2[i1] <- A2[i1]
-  
-  
+
+
   i1 <- ncB1 > ncB2 & A1 == "I" & A2 == "D"
   A1[i1] <- B1[i1]
   A2[i1] <- B2[i1]
-  
+
   i1 <- ncB1 < ncB2 & A1 == "I" & A2 == "D"
   A2[i1] <- B1[i1]
   A1[i1] <- B2[i1]
-  
+
   i1 <- ncB1 > ncB2 & A1 == "D" & A2 == "I"
   A2[i1] <- B1[i1]
   A1[i1] <- B2[i1]
-  
+
   i1 <- ncB1 < ncB2 & A1 == "D" & A2 == "I"
   A1[i1] <- B1[i1]
   A2[i1] <- B2[i1]
-  
+
   keep <- rep(TRUE, length(A1))
   keep[(ncA1 > 1 & ncA1 == ncA2 & (B1 == "D" | B1 == "I"))] <- FALSE
   keep[(ncB1 > 1 & ncB1 == ncB2 & (A1 == "D" | A1 == "I"))] <- FALSE
   keep[A1 == A2] <- FALSE
   keep[B1 == B2] <- FALSE
-  
+
   return(data.frame(A1=A1, A2=A2, B1=B1, B2=B2, keep=keep, stringsAsFactors=FALSE))
 }
