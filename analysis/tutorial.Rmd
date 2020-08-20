@@ -1,0 +1,97 @@
+---
+title: "Software Tutorial (Under Construction!)"
+subtitle: "Implementation of the Slope-Hunter method"
+author: "Osama Mahmoud"
+date: "July 23, 2020"
+site: workflowr::wflow_site
+output:
+  workflowr::wflow_html:
+    bibliography: sh.bib
+    toc: true
+    toc_depth: 2
+editor_options:
+  chunk_output_type: console
+---
+
+# Simulated Data
+
+Report tutorials on the simulated data here ...
+
+# Applied Data Analysis
+***Example: Fasting Insulin adjusted for BMI***
+
+## Install Slope-Hunter
+Follow the installation instructions described [here](https://github.com/Osmahmoud/Slope-Hunter).
+
+## Format Data for Slope-Hunter Analysis
+First, you need to load the `Slope-Hunter` R package:
+
+```{r}
+library(SlopeHunter)
+```
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(eval = FALSE)
+```
+
+### Read in the incidence (the condition trait) data
+
+```{r}
+BMI_incidence <- read_incidence(filename = "tmp",
+  gz = TRUE,
+  eaf_col="Freq_Tested_Allele_in_HRS",
+  effect_allele_col="Tested_Allele",
+  other_allele_col="Other_Allele",
+  pval_col = "P",
+  pos_col = "POS")
+```
+
+### Read in the conditional outcome data (BMI-adjusted Insulin)
+```{r}
+Insulin_adj_BMI <- read_prognosis("ftp://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/MahajanA_25625282_GCST007857/Mahajan_2014_SV_ExomeChip_lnFI_AdjForBMI.txt", 
+                                  gz = FALSE,
+                                  sep = "\t",
+                                  snp_col = "ID",
+                                  beta_col = "BETA",
+                                  se_col = "SE",
+                                  pval_col = "P",
+                                  effect_allele_col = "EA",
+                                  other_allele_col = "NEA",
+                                  chr_col = "Chromosome",
+                                  pos_col = "Position")
+```
+
+
+### Harmonisation
+```{r}
+Data_harmonised <- harmonise_effects(incidence_dat = BMI_incidence,
+                                prognosis_dat = Insulin_adj_BMI,
+                                by.pos = TRUE, pos_cols = c("POS.incidence", "POS.prognosis"),
+                                snp_cols=c("SNP", "SNP"),
+                                beta_cols = c("BETA.incidence", "BETA.prognosis"),
+                                se_cols=c("SE.incidence", "SE.prognosis"),
+                                EA_cols=c("EA.incidence", "EA.prognosis"),
+                                OA_cols=c("OA.incidence", "OA.prognosis")
+                                )
+```
+
+```{r}
+nrow(Data_harmonised)               # No. SNPs present in both datasets
+attributes(Data_harmonised)$info    # Get info on the harmonisation process
+```
+
+### Extract valid data after harmonisation (those that are eligible for pruning)
+```{r}
+Data_to_prune <- Data_harmonised[!Data_harmonised$remove, ]
+nrow(Data_to_prune)                 # No. SNPs to be pruned
+```
+
+### Pruning data
+```{r}
+Data_pruned <- LD_prune(Data_to_prune, Random = TRUE, seed = 15151515)
+```
+
+## Apply the Slope-Hunter approach
+TBA ...
+
+

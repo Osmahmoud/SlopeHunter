@@ -1,3 +1,9 @@
+### build the website
+library("workflowr")
+wflow_build()
+wflow_publish()
+
+### build the R package
 require(devtools)
 #devtools::missing_s3()  #list all S3 methods that you’ve forgotten to export
 devtools::document()
