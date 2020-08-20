@@ -3,8 +3,9 @@ library("workflowr")
 wflow_status()
 wflow_view()
 wflow_build()
-wflow_git_commit(all=TRUE)
 wflow_publish()
+# wflow_git_commit(all=TRUE)   You can use gitkraken anyway
+
 
 ### build the R package
 require(devtools)
