@@ -37,7 +37,7 @@ knitr::opts_chunk$set(eval = FALSE)
 ### Read in the incidence (the condition trait) data
 
 ```{r}
-BMI_incidence <- read_incidence(filename = "tmp",
+BMI_incidence <- read_incidence(filename = "Your-incidence-data-file.gz",
   gz = TRUE,
   eaf_col="Freq_Tested_Allele_in_HRS",
   effect_allele_col="Tested_Allele",
@@ -47,7 +47,7 @@ BMI_incidence <- read_incidence(filename = "tmp",
 ```
 
 ### Read in the conditional outcome data (BMI-adjusted Insulin)
-```{r}
+```{r, echo=FALSE}
 Insulin_adj_BMI <- read_prognosis("ftp://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/MahajanA_25625282_GCST007857/Mahajan_2014_SV_ExomeChip_lnFI_AdjForBMI.txt", 
                                   gz = FALSE,
                                   sep = "\t",
@@ -61,6 +61,20 @@ Insulin_adj_BMI <- read_prognosis("ftp://ftp.ebi.ac.uk/pub/databases/gwas/summar
                                   pos_col = "Position")
 ```
 
+
+```{r}
+Insulin_adj_BMI <- read_prognosis("Your-conditional-outcome-data-file.txt", 
+                                  gz = FALSE,
+                                  sep = "\t",
+                                  snp_col = "ID",
+                                  beta_col = "BETA",
+                                  se_col = "SE",
+                                  pval_col = "P",
+                                  effect_allele_col = "EA",
+                                  other_allele_col = "NEA",
+                                  chr_col = "Chromosome",
+                                  pos_col = "Position")
+```
 
 ### Harmonisation
 ```{r}
