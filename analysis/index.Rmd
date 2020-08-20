@@ -15,7 +15,7 @@ editor_options:
 
 # Welcome to Slope-Hunter website!
 
-Here are some useful links:
+Some useful links are as follows:
 
  [Pre-print of the manuscript](https://www.biorxiv.org/content/10.1101/2020.01.31.928077v1)
  
