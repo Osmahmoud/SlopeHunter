@@ -1,6 +1,7 @@
 ### build the website
 library("workflowr")
 wflow_build()
+wflow_status()
 wflow_publish()
 
 ### build the R package
