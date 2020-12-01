@@ -61,18 +61,18 @@ Get started with an example analysis by running the following:
 # load the package into your R session
 require(SlopeHunter)
 
-# Load data of a toy example
+# load data of a toy example
 data(data_example, package = "SlopeHunter")
 
-# View the first few rows of the data example
+# view the first few rows of the data example
 head(data_example)
 
-# display description of a toy example
+# display description of the data example
 help(data_example)
 ```
 This will show you a detailed description on:
-+ The instructions to run the software.
-+ The expected outcome.
++ The instructions on how to run the software.
++ The expected outcomes.
 + How to explore your outputs.
 
 For more details on usage of the software, run:
