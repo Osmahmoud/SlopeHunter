@@ -9,6 +9,8 @@
 - [Documentation](#documentation)
 - [System Requirements](#system-requirements)
 - [Installation Guide](#installation-guide)
+- [Illustrative Example](#illustrative-example)
+- [Citation](#citation)
 - [License](#license)
 - [Issues](https://github.com/Osmahmoud/SlopeHunter/issues)
 
@@ -52,7 +54,7 @@ To install the package within R, run:
 devtools::install_github("Osmahmoud/SlopeHunter")
 ```
 
-# Illustative example
+# Illustrative Example
 Get started with an example analysis by running the following:
 
 ```{r}
