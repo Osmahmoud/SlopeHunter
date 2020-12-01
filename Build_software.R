@@ -19,6 +19,7 @@ library("SlopeHunter")
 data("data_example")
 head(data_example)
 ?data_example
+help("data_example")
 citation("SlopeHunter")
 
 Sh.Model <- slopehunter(dat = data_example, xbeta_col="xbeta", xse_col="xse",

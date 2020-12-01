@@ -1,7 +1,7 @@
 #' Simulated effects on quantitative incidence and prognosis traits
 #'
 #' A simulated dataset for 10,000 independent variables (e.g. SNPs) consisting of regression coefficients on
-#' incidence and prognosis, with their standard errors. Among them, 5% (500 variables) have effects on
+#' incidence and prognosis, with their standard errors. Among all the SNPs, 5% (500 variables) have effects on
 #' incidence only, 5% (500 variables) on prognosis only, and 5% have correlated effects on both with a correlation
 #' coeficient of '-0.5'. The estimates are obtained from linear regression in a simulated dataset of 20,000 individuals.
 #'
@@ -15,19 +15,26 @@
 #' }
 #'
 #' @examples
+#' # Load the \code{SlopeHunter} package
+#' require(SlopeHunter)
+#'
+#' # Load the input data set
+#' data(data_example, package = "SlopeHunter")
+#' head(data_example)
+#'
 #' # Implement the Slope-Hunter method
 #' Sh.Model <- slopehunter(dat = data_example, xbeta_col="xbeta", xse_col="xse",
 #'                         ybeta_col="ybeta", yse_col="yse", yp_col="yp",
 #'                         comp.size = seq(0.03, 0.10, 0.01), xp.thresh = 0.1, coef.diff = 1,
 #'                         correct.reg.dill = TRUE, show_adjustments = TRUE, seed=2019)
 #'
-#' # [1] "Estimated slope: -0.258701852489861"
-#' # [1] "SE of the slope: 0.0143848328056302"
-#' # [1] "95% CI: -0.286896124788896, -0.230507580190826"
+#' # [1] "Estimated slope: -0.262779432124327"
+#' # [1] "SE of the slope: 0.0147636543987382"
+#' # [1] "95% CI: -0.291716194745854, -0.2338426695028"
 #'
 #' # Display the estimated slope (adjustment factor)
 #' Sh.Model$Sh.b
-#' # [1] -0.2587019
+#' # [1] -0.2627794
 #'
 #' # Extract resulted data with adjusted estimates and information of SNPs included in the analysis
 #' Adj <- Sh.Model$Estimates
@@ -38,7 +45,7 @@
 #'
 #' # Show the first 6 values of the adjusted estimated effects on prognosis
 #' head(Adj$ybeta.Adj)
-#' # [1] -0.011184217  0.004265600  0.008185743 -0.008299934  0.001626433  0.006175507
+#' # [1] -0.011214090  0.004324046  0.008137912 -0.008280179  0.001521822  0.006230996
 #'
 #' # Generate an interactive plot for the estimated clusters (hover on the data points to view info)
 #' plot(Sh.Model, what = "clusters")

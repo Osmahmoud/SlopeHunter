@@ -87,21 +87,7 @@ slopehunter = function(dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="
   names(dat)[names(dat) == yse_col] <- "yse"
   names(dat)[names(dat) == yp_col] <- "yp"
 
-  InData.raw <- dat[, c("SNP", "xbeta", "xse", "xp", "ybeta", "yse", "yp")]
-  InData <- InData.raw
-
-  # standardise effects
-  x.Stand <- std(beta = InData$xbeta, se = InData$xse)
-  xSigma <- x.Stand$Sigma
-  InData$xbeta <- x.Stand$beta.std
-  InData$xse   <- x.Stand$se.std
-  InData$xp    <- pchisq((InData$xbeta/InData$xse)^2, 1, lower.tail = FALSE)
-
-  y.Stand <- std(beta = InData$ybeta, se = InData$yse)
-  ySigma <- y.Stand$Sigma
-  InData$ybeta <- y.Stand$beta.std
-  InData$yse   <- y.Stand$se.std
-  InData$yp    <- pchisq((InData$ybeta/InData$yse)^2, 1, lower.tail = FALSE)
+  InData <- dat[, c("SNP", "xbeta", "xse", "xp", "ybeta", "yse", "yp")]
 
   ### Phase 1: Identify SNPs neither affect x nor y (noisy) ###
   set.seed(seed)
@@ -206,11 +192,8 @@ slopehunter = function(dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="
   Res$Clusters[Res$Status == "G1" | Res$Status == "G1-Retained"] <- "G1"
   Res$Clusters[Res$Status == "G2" | Res$Status == "G2-Retained"] <- "G2"
 
-  b.std   <- Iter[Iter$Optimal, "Raw.Slope"] # slope for standardised data
-  bse.std <- Iter[Iter$Optimal, "SE"]
-
-  b.raw <- b.std * (ySigma/xSigma)  # calc. equivelent slope on the unstandardised scale
-  bse   <- bse.std * (ySigma/xSigma)
+  b.raw   <- Iter[Iter$Optimal, "Raw.Slope"] # slope for standardised data
+  bse     <- Iter[Iter$Optimal, "SE"]
 
   ## extract prbabilities
   Res$Pr.G1 <- NA
@@ -218,7 +201,6 @@ slopehunter = function(dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="
 
   ## produce results
   Res <- Res[, c("SNP", "xbeta", "xse", "xp", "ybeta", "yse", "yp", "Clusters", "Status", "Pr.G1", "Fitclass")]
-  Res[, c("xbeta", "xse", "xp", "ybeta", "yse", "yp")] <- InData.raw[,c("xbeta", "xse", "xp", "ybeta", "yse", "yp")]  # data on the original scale
 
   if(correct.reg.dill){
     Sh.b <- hOlkin.adj(Data=Res, b.raw=b.raw, xbeta="xbeta", xse="xse", G1.class = G1.class)
@@ -236,7 +218,7 @@ slopehunter = function(dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="
   {
     ##### Adjust
     Res$ybeta.Adj <- Res$ybeta - (Sh.b * Res$xbeta)
-    Res$yse.Adj = sqrt(Res$yse^2 + Sh.b^2 * Res$xse^2)
+    Res$yse.Adj = sqrt(Res$yse^2 + (Sh.b^2 * Res$xse^2) + (Res$xbeta^2 * bse^2) + (Res$xse^2 * bse^2))
     Res$yp.Adj = pchisq((Res$ybeta.Adj/Res$yse.Adj)^2, 1, lower.tail = FALSE)
   }
 

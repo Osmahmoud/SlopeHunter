@@ -57,7 +57,13 @@ Get started with an example analysis by running the following:
 
 ```{r}
 # load the package into your R session
-library(SlopeHunter)
+require(SlopeHunter)
+
+# Load data of a toy example
+data(data_example, package = "SlopeHunter")
+
+# View the first few rows of the data example
+head(data_example)
 
 # display description of a toy example
 help(data_example)
