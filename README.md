@@ -28,9 +28,9 @@ The `SlopeHunter` R package requires only a standard computer for most applicati
 
 ## Software requirements
 The `SlopeHunter` R package is supported for *Windows*, *Linux* and *macOS*. The package has been tested in R under the following systems:
-+ Linux: Ubuntu 16.04 (R 3.6.1)
-+ macOS: Mojave 10.14.6 (R 3.6.1)
-+ Windows: 10 (R 3.6.3)
++ Linux: Ubuntu 16.04 (R 4.0.4)
++ macOS: Mojave 10.14.6 (R 4.0.4)
++ Windows: 10 (R 4.0.4)
 
 # R Dependencies
 This software requires `R (>= 3.5.0)`. If you do have an older version of R installed on your machine, you may need to install the latest R version [from here](https://cloud.r-project.org/).
@@ -44,6 +44,7 @@ plotly
 stats
 ieugwasr
 data.table
+dplyr
 ```
 
 # Installation Guide:
