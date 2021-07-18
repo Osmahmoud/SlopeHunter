@@ -14,6 +14,8 @@ devtools::document()
 # devtools::build_vignettes()
 devtools::build()
 devtools::install(build_vignettes = TRUE)
+devtools::check()
+
 
 library("SlopeHunter")
 data("data_example")
@@ -22,23 +24,26 @@ head(data_example)
 help("data_example")
 citation("SlopeHunter")
 
-Sh.Model <- slopehunter(dat = data_example, xbeta_col="xbeta", xse_col="xse",
-                        ybeta_col="ybeta", yse_col="yse", yp_col="yp",
-                        comp.size = seq(0.03, 0.10, 0.01), xp.thresh = 0.1, coef.diff = 1,
-                        correct.reg.dill = TRUE, show_adjustments = TRUE, seed=2019)
+Sh.Model <- hunt(dat = data_example, xbeta_col="xbeta", xse_col="xse",
+                 ybeta_col="ybeta", yse_col="yse", yp_col="yp",
+                 xp_thresh = 0.001, Bootstrapping = TRUE, show_adjustments = TRUE, seed=2021)
 
-Sh.Model$Sh.b
-Adj <- Sh.Model$Estimates
+
+Sh.Model$b
+Adj <- Sh.Model$Fit
 head(Adj)
 head(Adj$ybeta)
-head(Adj$ybeta.Adj)
 
-Adj_sh <- SHadj(Sh.Model, dat = data_example, xbeta_col = "xbeta", xse_col = "xse",
-             ybeta_col = "ybeta", yse_col = "yse")
+head(Sh.Model$est)
 
-head(Adj_sh)
-?slopehunter
-plot(Sh.Model)
+# Adj_sh <- SHadj(Sh.Model, dat = data_example, xbeta_col = "xbeta", xse_col = "xse",
+#             ybeta_col = "ybeta", yse_col = "yse")
+# head(Adj_sh)
+
+?SlopeHunter
+require(ggplot2)
+require(plotly)
+ggplotly(Sh.Model$plot)
 
 # Install it from Github
 devtools::install_github("Osmahmoud/SlopeHunter")

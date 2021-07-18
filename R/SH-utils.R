@@ -76,3 +76,94 @@ plot.SH <- function(x, what= c("clusters", "classification", "uncertainty", "den
   }
   invisible()
 }
+
+#' Implement the EM algorithm for the SlopeHunter model-based clustering
+#'
+#' @param gwas a data frame with columns: xbeta; xse; ybeta; yse.
+#' @param pi0 initial value for the weight of the mixture component that represents the cluster of SNPs affecting x only.
+#' @param sxy1 initial value for the covariance between x and y.
+#' @return EM fit for SlopeHunter estimator
+#' @importFrom mclust dmvnorm
+#' @import dplyr
+#' @importFrom stats sd cov na.omit pt
+shclust <- function(gwas, pi0, sxy1){
+  sx0 = sx1 = gwas %>% summarise(sd(xbeta)) %>% pull
+  sy0 = sy1 = gwas %>% summarise(sd(ybeta)) %>% pull
+  dir0 = gwas %>% summarise(cov(xbeta, ybeta)) %>% pull %>% sign()
+  if (dir0==0) stop("All associations with at least either x or y are constant")
+
+  # convergence criterion
+  loglkl_ck = 0
+
+  ### EM algorithm
+  for(iter in 1:50000){
+    #### The E step:
+    # covariance matrix for the target component (f0)
+    sxy0 = sx0*sy0*dir0*0.95       # the x & y perfectly correlated under 1st component  #===========
+    sigma0 = matrix(c(sx0^2,sxy0,sxy0,sy0^2), 2, 2)
+
+    # 1st component
+    f0 = gwas %>%
+      dplyr::select(xbeta, ybeta) %>%
+      mclust::dmvnorm(mean=c(0,0), sigma=sigma0)
+    f0[f0<1e-300] = 1e-300
+
+    # covariance matrix for the component (f1)
+    sigma1 = matrix(c(sx1^2,sxy1,sxy1,sy1^2), 2, 2)
+
+    # 2nd component
+    f1 = gwas %>%
+      dplyr::select(xbeta, ybeta) %>%
+      mclust::dmvnorm(mean=c(0,0), sigma=sigma1)
+    f1[f1<1e-300] = 1e-300
+
+    # loglik of the mixture model: pi0 * f0 + (1-p0) * f1
+    loglkl = sum(log(pi0*f0+(1-pi0)*f1))
+
+    ## proportional contribution of density of f0 (for every point) to the total mixture
+    pt = pi0*f0/(pi0*f0+(1-pi0)*f1)
+    pt[pt>0.9999999] = 0.9999999
+
+    #### The M step:
+    # update pi0
+    pi0 = mean(pt)
+    if (pi0<0.0001) pi0 = 0.0001
+    if (pi0>0.9999) pi0 = 0.9999
+
+    # update sx0 & sy0
+    sx0 = gwas %>% summarise(sqrt(sum(pt*(xbeta^2))/sum(pt))) %>% pull
+    sy0 = gwas %>% summarise(sqrt(sum(pt*(ybeta^2))/sum(pt))) %>% pull
+    dir0 = gwas %>% summarise(sum(pt*xbeta*ybeta)/sum(pt)) %>% pull %>% sign()
+    if (dir0==0) dir0=sample(c(1,-1), 1)   # avoid slope = 0 (horizontal line)
+
+    # update sx1, sy1 & sxy1
+    sx1 = gwas %>% summarise(sqrt(sum((1-pt)*(xbeta^2))/(length(xbeta)-sum(pt)))) %>% pull
+    sy1 = gwas %>% summarise(sqrt(sum((1-pt)*(ybeta^2))/(length(ybeta)-sum(pt)))) %>% pull
+    sxy1 = gwas %>% summarise(sum((1-pt)*xbeta*ybeta)/(length(xbeta)-sum(pt))) %>% pull
+    if (abs(sxy1) > 0.75*sx1*sy1)  sxy1 = sign(sxy1)*0.75*sx1*sy1     #===========
+
+    ## Check convergence
+    if (iter%%10==0){
+      if ((loglkl - loglkl_ck)/loglkl < 1e-10){
+        break
+      } else {
+        loglkl_ck = loglkl
+      }
+    }
+  }
+
+  # Diagnosis
+  if (iter == 50000) warning("The algorithm may not have converged.\n")
+
+  ### Results
+  Fit = gwas %>% mutate(pt = pt) %>%
+    mutate(po = 1-pt, clusters = factor(ifelse(pt >= 0.5, "Hunted", "Pleiotropic")))
+
+  # slope of the eigenvector
+  b = dir0*sy0/sx0
+  bse = 0
+  b_CI = c(b - 1.96*bse, b + 1.96*bse)
+  entropy = Fit %>% filter(clusters == "Hunted") %>% summarise(mean(pt)) %>% pull
+
+  return(list(b=b, bse=bse, b_CI=b_CI, iter=iter, pi0=pi0, entropy=entropy, Fit=Fit))
+}
