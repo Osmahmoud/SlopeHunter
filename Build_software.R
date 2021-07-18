@@ -40,7 +40,7 @@ head(Sh.Model$est)
 #             ybeta_col = "ybeta", yse_col = "yse")
 # head(Adj_sh)
 
-?SlopeHunter
+?hunt
 require(ggplot2)
 require(plotly)
 ggplotly(Sh.Model$plot)
