@@ -20,57 +20,57 @@
 #' @param min_pval Minimum allowed p-value. The default is `1e-200`.
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
+#' @importFrom data.table data.table
+#' @importFrom base tolower gsub subset duplicated
+#' @importFrom stats pnorm
 #' @export
 #' @return data frame
-#' @importFrom stats pnorm
 
-
-format_data = function (dat, type = "incidence", snps = NULL, 
+format_data = function (dat, type = "incidence", snps = NULL,
                         snp_col="SNP", beta_col="BETA", se_col="SE",
                         pval_col="PVAL", eaf_col="EAF", effect_allele_col="EA",
                         other_allele_col="OA", gene_col="GENE", chr_col = "CHR", pos_col="POS",
                         min_pval=1e-200, log_pval=FALSE)
 {
   all_cols <- c(snp_col, beta_col, se_col, pval_col, eaf_col, effect_allele_col, other_allele_col, gene_col, chr_col, pos_col)
-  
+
   i <- names(dat) %in% all_cols
   if (sum(i) == 0) {
     stop("None of the specified columns present!")
   }
-  dat <- dat[, i]
+  dat <- dat[, i, with = FALSE]    # data.table (FAQ 1.5): select column names stored in i
 
   # Check if columns required for SH are present
   SH_cols_req = c(snp_col, beta_col, se_col, effect_allele_col, other_allele_col)
   if (!all(SH_cols_req %in% names(dat))){
     stop("The following columns are not present and are required for the Slope-Hunter analysis\n", paste(SH_cols_req[!SH_cols_req %in% names(dat)]), collapse="\n")
   }
-  
+
   # Format SNP IDs to the standard: lower-case letters, remove spaces & exclude NAs
   names(dat)[names(dat) == snp_col] <- "SNP"
-  snp_col <- "SNP"
-  dat$SNP <- tolower(dat$SNP)
-  dat$SNP <- gsub("[[:space:]]", "", dat$SNP)
-  dat <- subset(dat, !is.na(SNP))
-  
+  # snp_col <- "SNP"
+  dat$SNP <- base::tolower(dat$SNP)
+  dat$SNP <- base::gsub("[[:space:]]", "", dat$SNP)
+  dat <- base::subset(dat, !is.na(SNP))
+
   if (!is.null(snps)){
-    dat <- subset(dat, SNP %in% snps)
+    dat <- base::subset(dat, SNP %in% snps)
   }
-  
+
   if (log_pval){
     dat$PVAL <- 10^-dat$PVAL
   }
-  
+
   # Remove duplicated SNPs
-  dup <- duplicated(dat$SNP)
+  dup <- base::duplicated(dat$SNP)
   if (any(dup)){
-    warning("Duplicated SNPs present in data. Just keeping the first instance for:\n",
-            paste(dat$SNP[dup], collapse = "\n"))
+    warning(sum(dup), " duplicated SNP rsIDs present: Just keeping the first instance ...")
     dat <- dat[!dup, ]
   }
-  
+
   # initiate indicator for valid SNPs for the SH analysis
   dat$SH_keep.outcome <- TRUE
-  
+
   # Check beta
   i <- which(names(dat) == beta_col)[1]
   if(!is.na(i))
@@ -85,7 +85,7 @@ format_data = function (dat, type = "incidence", snps = NULL,
     index[is.na(index)] <- TRUE
     dat$BETA.outcome[index] <- NA
   }
-  
+
   # Check se
   i <- which(names(dat) == se_col)[1]
   if(!is.na(i))
@@ -100,7 +100,7 @@ format_data = function (dat, type = "incidence", snps = NULL,
     index[is.na(index)] <- TRUE
     dat$SE.outcome[index] <- NA
   }
-  
+
   # Check pval
   i <- which(names(dat) == pval_col)[1]
   if(!is.na(i))
@@ -125,15 +125,15 @@ format_data = function (dat, type = "incidence", snps = NULL,
       dat$PVAL_origin.outcome[index] <- "inferred"
     }
   }
-  
+
   # If no pval column then create it from beta and se
   if(!"PVAL.outcome" %in% names(dat))
   {
-    message("Inferring p-values")
+    message("Inferring p-values ...")
     dat$PVAL.outcome <- 2*pnorm(abs(dat$beta.outcome)/dat$se.outcome, lower.tail=FALSE)
     dat$PVAL_origin.outcome <- "inferred"
   }
-  
+
   # Check eaf
   i <- which(names(dat) == eaf_col)[1]
   if(!is.na(i))
@@ -148,7 +148,7 @@ format_data = function (dat, type = "incidence", snps = NULL,
     index[is.na(index)] <- TRUE
     dat$EAF.outcome[index] <- NA
   }
-  
+
   # Check effect_allele
   i <- which(names(dat) == effect_allele_col)[1]
   if(!is.na(i))
@@ -163,7 +163,7 @@ format_data = function (dat, type = "incidence", snps = NULL,
       warning("effect_allele column is not character data. Coercing...")
       dat$EA.outcome <- as.character(dat$EA.outcome)
     }
-    
+
     dat$EA.outcome <- toupper(dat$EA.outcome)
     index <- !(grepl("^[ACTG]+$", dat$EA.outcome) | dat$EA.outcome %in% c("D", "I"))
     index[is.na(index)] <- TRUE
@@ -189,7 +189,7 @@ format_data = function (dat, type = "incidence", snps = NULL,
       warning("other_allele column is not character data. Coercing...")
       dat$OA.outcome <- as.character(dat$OA.outcome)
     }
-    
+
     dat$OA.outcome <- toupper(dat$OA.outcome)
     index <- ! (grepl("^[ACTG]+$", dat$OA.outcome) | dat$OA.outcome %in% c("D", "I"))
     index[is.na(index)] <- TRUE
@@ -200,42 +200,42 @@ format_data = function (dat, type = "incidence", snps = NULL,
       dat$SH_keep.outcome[index] <- FALSE
     }
   }
-  
+
   # Report gene
   if(gene_col %in% names(dat))
   {
     names(dat)[which(names(dat) == gene_col)[1]] <- "GENE.outcome"
   }
-  
+
   # Report chr
   if(chr_col %in% names(dat))
   {
     names(dat)[which(names(dat) == chr_col)[1]] <- "CHR.outcome"
   }
-  
+
   # Report position
   if(pos_col %in% names(dat))
   {
     names(dat)[which(names(dat) == pos_col)[1]] <- "POS.outcome"
   }
-  
+
   # Identify SNPs with missing required info for SH analysis
   if(any(dat$SH_keep.outcome))
   {
     SHcols <- c("SNP", "BETA.outcome", "SE.outcome", "EA.outcome")
     SHcols_present <- SHcols[SHcols %in% names(dat)]
-    dat$SH_keep.outcome <- dat$SH_keep.outcome & apply(dat[, SHcols_present], 1, function(x) !any(is.na(x)))
+    dat$SH_keep.outcome <- dat$SH_keep.outcome & apply(dat[, SHcols_present, with=FALSE], 1, function(x) !any(is.na(x)))
     if(any(!dat$SH_keep.outcome))
     {
       warning("The following SNP(s) are missing required information for the SH analysis and will be excluded\n", paste(subset(dat, !SH_keep.outcome)$SNP, collapse="\n"))
     }
   }
-  
+
   if(all(!dat$SH_keep.outcome))
   {
     warning("None of the provided SNPs can be used for SH analysis, they are missing required information.")
   }
-  
+
   # Add in missing SH cols
   for(col in c("SNP", "BETA.outcome", "SE.outcome", "EA.outcome", "OA.outcome", "EAF.outcome"))
   {
@@ -244,7 +244,7 @@ format_data = function (dat, type = "incidence", snps = NULL,
       dat[[col]] <- NA
     }
   }
-  
+
   names(dat) <- gsub("outcome", type, names(dat))
   rownames(dat) <- NULL
   return(dat)
