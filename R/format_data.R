@@ -20,8 +20,7 @@
 #' @param min_pval Minimum allowed p-value. The default is `1e-200`.
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
-#' @importFrom data.table data.table
-#' @importFrom base tolower gsub subset duplicated
+#' @importFrom data.table data.table setnames
 #' @importFrom stats pnorm
 #' @export
 #' @return data frame
@@ -34,74 +33,81 @@ format_data = function (dat, type = "incidence", snps = NULL,
 {
   all_cols <- c(snp_col, beta_col, se_col, pval_col, eaf_col, effect_allele_col, other_allele_col, gene_col, chr_col, pos_col)
 
+  # check given names ####
   i <- names(dat) %in% all_cols
+  ## Error if non of the given names are present in the data
   if (sum(i) == 0) {
     stop("None of the specified columns present!")
   }
-  dat <- dat[, i, with = FALSE]    # data.table (FAQ 1.5): select column names stored in i
-
-  # Check if columns required for SH are present
+  ## data.table (FAQ 1.5): select the columns whose names are given by the user (stored in i)
+  dat <- dat[, i, with = FALSE]
+  ## Check if columns required for SH are present
   SH_cols_req = c(snp_col, beta_col, se_col, effect_allele_col, other_allele_col)
+  ## Error if not ALL of the essential columns for SH present
   if (!all(SH_cols_req %in% names(dat))){
     stop("The following columns are not present and are required for the Slope-Hunter analysis\n", paste(SH_cols_req[!SH_cols_req %in% names(dat)]), collapse="\n")
   }
 
-  # Format SNP IDs to the standard: lower-case letters, remove spaces & exclude NAs
-  names(dat)[names(dat) == snp_col] <- "SNP"
-  # snp_col <- "SNP"
-  dat$SNP <- base::tolower(dat$SNP)
-  dat$SNP <- base::gsub("[[:space:]]", "", dat$SNP)
-  dat <- base::subset(dat, !is.na(SNP))
-
+  # check SNP ####
+  ## Format SNP IDs to the standard: lower-case letters, remove spaces & exclude NAs ####
+  data.table::setnames(dat, snp_col, "SNP")
+  ## Extract only a list of SNPs if <snps> is given
   if (!is.null(snps)){
-    dat <- base::subset(dat, SNP %in% snps)
+    dat <- dat[SNP %in% snps]
   }
-
-  if (log_pval){
-    dat$PVAL <- 10^-dat$PVAL
-  }
-
-  # Remove duplicated SNPs
-  dup <- base::duplicated(dat$SNP)
+  dat <- dat[, SNP:= tolower(SNP)]
+  dat <- dat[, SNP:= gsub("[[:space:]]", "", SNP)]
+  dat <- dat[!is.na(SNP)]
+  ## Remove duplicated SNPs
+  dup <- duplicated(dat$SNP)
   if (any(dup)){
     warning(sum(dup), " duplicated SNP rsIDs present: Just keeping the first instance ...")
-    dat <- dat[!dup, ]
+    dat <- dat[!dup]
   }
 
   # initiate indicator for valid SNPs for the SH analysis
-  dat$SH_keep.outcome <- TRUE
+  dat <- dat[, SH_keep.outcome:= TRUE]
 
-  # Check beta
-  i <- which(names(dat) == beta_col)[1]
-  if(!is.na(i))
+
+  # Check beta ####
+  data.table::setnames(dat, beta_col, "BETA.outcome")
+  ## Coercing to numeric if not
+  if(!is.numeric(dat$BETA.outcome))
   {
-    names(dat)[i] <- "BETA.outcome"
-    if(!is.numeric(dat$BETA.outcome))
-    {
-      warning("beta column is not numeric. Coercing...")
-      dat$BETA.outcome <- as.numeric(dat$BETA.outcome)
-    }
-    index <- !is.finite(dat$BETA.outcome)
-    index[is.na(index)] <- TRUE
-    dat$BETA.outcome[index] <- NA
+    warning("beta column is not numeric. Coercing...")
+    dat <- dat[, BETA.outcome:= as.numeric(BETA.outcome)]
+  }
+  ## replace infinite values (NA, NaN, Inf or -Inf), if any, with NA
+  dat <- dat[, BETA.outcome:= ifelse(is.finite(BETA.outcome), BETA.outcome, NA)]
+
+
+  # Check se ####
+  data.table::setnames(dat, se_col, "SE.outcome")
+  ## Coercing to numeric if not
+  if(!is.numeric(dat$SE.outcome))
+  {
+    warning("se column is not numeric. Coercing...")
+    dat <- dat[, SE.outcome:= as.numeric(SE.outcome)]
+  }
+  ## replace infinite values (NA, NaN, Inf or -Inf), if any, with NA
+  dat <- dat[, SE.outcome:= ifelse(is.finite(SE.outcome), SE.outcome, NA)]
+
+
+
+
+
+
+
+
+
+
+
+  # Check pval -NOTE: this might noy be given by the user
+  if (log_pval){   ## TO BE HANDLED: Relocated!!!!
+    dat$PVAL <- 10^-dat$PVAL
   }
 
-  # Check se
-  i <- which(names(dat) == se_col)[1]
-  if(!is.na(i))
-  {
-    names(dat)[i] <- "SE.outcome"
-    if(!is.numeric(dat$SE.outcome))
-    {
-      warning("se column is not numeric. Coercing...")
-      dat$SE.outcome <- as.numeric(dat$SE.outcome)
-    }
-    index <- !is.finite(dat$SE.outcome) | dat$SE.outcome <= 0
-    index[is.na(index)] <- TRUE
-    dat$SE.outcome[index] <- NA
-  }
 
-  # Check pval
   i <- which(names(dat) == pval_col)[1]
   if(!is.na(i))
   {
