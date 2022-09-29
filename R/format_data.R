@@ -20,7 +20,7 @@
 #' @param min_pval Minimum allowed p-value. The default is `1e-200`.
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
-#' @importFrom data.table data.table setnames
+#' @importFrom data.table data.table setnames setcolorder
 #' @importFrom stats pnorm
 #' @export
 #' @return data frame
@@ -195,6 +195,10 @@ format_data = function (dat, type = "incidence", snps = NULL,
   } else {
     stop("None of the provided SNPs can be used for SH analysis. They are missing essentially required information!")
   }
+
+  # Set order of the columns
+  dat <- data.table::setcolorder(dat, c("SNP", "EA.outcome", "OA.outcome", "BETA.outcome", "SE.outcome",
+                                        "PVAL.outcome", "PVAL_origin.outcome", "EAF.outcome"))
 
   # Rename columns
   data.table::setnames(dat, names(dat), gsub("outcome", type, names(dat)))
