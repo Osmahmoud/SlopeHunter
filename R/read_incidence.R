@@ -51,6 +51,3 @@ read_incidence = function(filename, snp_col="SNP", beta_col="BETA", se_col="SE",
 
   return(incidence_dat)
 }
-
-
-
