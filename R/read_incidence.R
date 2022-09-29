@@ -29,7 +29,7 @@ read_incidence = function(filename, snp_col="SNP", beta_col="BETA", se_col="SE",
   incidence_dat <- data.table::fread(filename)
 
   incidence_dat <- format_data(
-    as.data.frame(incidence_dat),
+    incidence_dat,
     type="incidence",
     snps=NULL,
     snp_col=snp_col,
