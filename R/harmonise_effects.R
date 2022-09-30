@@ -6,8 +6,8 @@
 #' relative to the same allele.
 #'
 #' @md
-#' @param incidence_dat data.frame with data for incidence. It is recommended to be an output from \code{read_incidence}. If not, it tries to format it before harmonisation.
-#' @param prognosis_dat data.frame with data for prognosis. It is recommended to be an output from \code{read_prognosis}. If not, it tries to format it before harmonisation.
+#' @param incidence_dat data.table for incidence data. It is recommended to be an output from \code{read_incidence}. If not, it tries to format it before harmonisation.
+#' @param prognosis_dat data.table for prognosis data. It is recommended to be an output from \code{read_prognosis}. If not, it tries to format it before harmonisation.
 #' @param incidence_formatted Logical indicationg whether \code{incidence_dat} is formatted using \code{read_incidence}.
 #' @param prognosis_formatted Logical indicationg whether \code{prognosis_dat} is formatted using \code{read_prognosis}.
 #' @param by.pos Logical, if `TRUE` the harmonisation will be performed by matching the exact SNP positions between the incidence and prognosis datasets.
@@ -17,6 +17,8 @@
 #' @param se_cols A vector of length 2 specifying the name of the se columns in the incidence and prognosis datasets respectively.
 #' @param EA_cols A vector of length 2 specifying the name of the effect allele columns in the incidence and prognosis datasets respectively.
 #' @param OA_cols A vector of length 2 specifying the name of the non-effect allele columns in the incidence and prognosis datasets respectively.
+#' @param chr_cols A vector of length 2 specifying the name of the chromosome columns in the incidence and prognosis datasets respectively.
+#' @param gene_col A vector of length 2 specifying the name of the gene columns in the incidence and prognosis datasets respectively.
 #' @details This function will try to harmonise the incidence and prognosis data sets on the specified columns. Where necessary, correct strand
 #' for non-palindromic SNPs (i.e. flip the sign of effects so that the effect allele is the same in both datasets), and drop all palindromic SNPs from the analysis (i.e. with the allele A/T or G/C).
 #' The alleles that do not match between data sets (e.g T/C in one data set and A/C in the other) will also be dropped.
@@ -26,12 +28,28 @@
 
 harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=TRUE, prognosis_formatted=TRUE,
                               by.pos=FALSE, pos_cols=c("POS.incidence", "POS.prognosis"), snp_cols=c("SNP", "SNP"), beta_cols=c("BETA.incidence", "BETA.prognosis"),
-                              se_cols=c("SE.incidence", "SE.prognosis"), EA_cols=c("EA.incidence", "EA.prognosis"), OA_cols=c("OA.incidence", "OA.prognosis"))
-{
+                              se_cols=c("SE.incidence", "SE.prognosis"), EA_cols=c("EA.incidence", "EA.prognosis"), OA_cols=c("OA.incidence", "OA.prognosis"),
+                              chr_cols=c("CHR.incidence", "CHR.prognosis"), gene_col=c("GENE.incidence", "GENE.prognosis")) {
+
+  # check inputs of col names are given for both incidence and prognosis ####
+  L_pos = length(pos_cols) == 2
+  L_snp = length(snp_cols) == 2
+  L_beta = length(beta_cols) == 2
+  L_se = length(se_cols) == 2
+  L_ea = length(EA_cols) == 2
+  L_oa = length(OA_cols) == 2
+  L_chr = length(chr_cols) == 2
+  L_gene = length(gene_col) == 2
+  CheCol = c(L_pos, L_snp, L_beta, L_se, L_ea, L_oa, L_chr, L_gene)
+  if(!all(CheCol)) {
+    stop("column names must be given as vectors of lengths 2!")
+  }
+
+  # Format incidence if not formatted ####
   if(!incidence_formatted){
-    message("Formatting incidence\n")
+    message("Formatting incidence data ...\n")
     incidence_dat <- format_data(
-      as.data.frame(incidence_dat),
+      as.data.table(incidence_dat),
       type="incidence",
       snps=NULL,
       snp_col=snp_cols[1],
@@ -39,14 +57,16 @@ harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=
       se_col=se_cols[1],
       effect_allele_col=EA_cols[1],
       other_allele_col=OA_cols[1],
-      pos_col=pos_cols[1]
+      pos_col=pos_cols[1],
+      chr_col=chr_cols[1]
     )
   }
 
+  # Format prognosis if not formatted ####
   if(!prognosis_formatted){
-    message("Formatting prognosis\n")
+    message("Formatting prognosis data ...\n")
     prognosis_dat <- format_data(
-      as.data.frame(prognosis_dat),
+      as.data.table(prognosis_dat),
       type="prognosis",
       snps=NULL,
       snp_col=snp_cols[2],
@@ -54,42 +74,55 @@ harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=
       se_col=se_cols[2],
       effect_allele_col=EA_cols[2],
       other_allele_col=OA_cols[2],
-      pos_col=pos_cols[2]
+      pos_col=pos_cols[2],
+      chr_col=chr_cols[2]
     )
   }
 
+  # merging by SNPs ####
   if(!by.pos){
-    message("Merging incidence and prognosis datasets by SNP ...")
+    message("Merging incidence and prognosis datasets by SNPs ...")
     dat <- merge(incidence_dat, prognosis_dat, by="SNP")
-    # give unique names for common columns (e.g. CHR & POS)
-    names(dat)[names(dat) == "CHR.incidence"] <- "CHR"
-    names(dat)[names(dat) == "POS.incidence"] <- "POS"
   }
 
+  # merging by POS ####
   if(by.pos){
     message("Merging incidence and prognosis datasets by genomic position ...")
-    dat <- merge(incidence_dat, prognosis_dat, by.x="POS.incidence", by.y="POS.prognosis")
-
-    # give unique names for common columns (e.g. SNP, CHR & POS)
-    if(sum(grepl("^rs\\d+$", dat$SNP.x)) > sum(grepl("^rs\\d+$", dat$SNP.y))){
-      names(dat)[names(dat) == "SNP.x"] <- "SNP"
-    } else {
-      names(dat)[names(dat) == "SNP.y"] <- "SNP"
+    ## stop if pos_cols are not present in the data
+    if(!((pos_cols[1] %in% names(incidence_dat)) & (pos_cols[2] %in% names(prognosis_dat)))) {
+      stop("You asked to harmonise by genomic position, but pos_cols are not present in the data!")
     }
-    names(dat)[names(dat) == "CHR.incidence"] <- "CHR"
-    names(dat)[names(dat) == "POS.incidence"] <- "POS"
+    dat <- merge(incidence_dat, prognosis_dat, by.x="POS.incidence", by.y="POS.prognosis")
   }
 
   message("Harmonising effects and alleles ...")
+
+  #TEMP!!!!!!!1
+  ## give unique names for common columns (e.g. SNP, CHR & POS)
+  names(dat)[names(dat) == "CHR.incidence"] <- "CHR"
+  names(dat)[names(dat) == "POS.incidence"] <- "POS"
+
+  ## give unique names for common columns (e.g. SNP, CHR & POS)
+  if(sum(grepl("^rs\\d+$", dat$SNP.x)) > sum(grepl("^rs\\d+$", dat$SNP.y))){
+    names(dat)[names(dat) == "SNP.x"] <- "SNP"
+  } else {
+    names(dat)[names(dat) == "SNP.y"] <- "SNP"
+  }
+  names(dat)[names(dat) == "CHR.incidence"] <- "CHR"
+  names(dat)[names(dat) == "POS.incidence"] <- "POS"
+  #END TEMP!!!!!!!!!!
+
+
   dat <- harmonise_dataset(dat)
   return(dat)
 }
 
+
+
+#'
+#' @importFrom data.table data.table
 harmonise_dataset <- function(dat)
 {
-  SNP=dat$SNP
-  Chr=dat$CHR
-  POS=dat$POS
   A1=dat$EA.incidence
   A2=dat$OA.incidence
   B1=dat$EA.prognosis
@@ -103,7 +136,10 @@ harmonise_dataset <- function(dat)
   fA=dat$EAF.incidence
   fB=dat$EAF.prognosis
 
-  if(length(SNP) == 0) return(data.frame())
+  if(nrow(dat) == 0) {
+   stop("No common genetic variants present in incidence and prognosis data ...")
+  }
+
   jinfo <- list()
 
   # indel recoding
@@ -153,7 +189,7 @@ harmonise_dataset <- function(dat)
   fB[i & to_swap] <- 1 - fB[i & to_swap]
   jinfo[['flipped_then_switched_alleles']] <- sum(i & to_swap)
 
-  # Any SNPs left with unmatching alleles (e.g. A/C Vs. A/G) need to be removed
+  # Any SNPs left with un-matching alleles (e.g. A/C Vs. A/G) need to be removed
   OK <- (A1 == B1) & (A2 == B2)
   remove <- !OK
   remove[indel_index][!temp$keep] <- TRUE   # remove invalid indel recoding
@@ -161,11 +197,24 @@ harmonise_dataset <- function(dat)
   # Remove palindromic SNPs
   remove[palindromic] <- TRUE
 
-  dat <- data.frame(SNP=SNP, Chr=Chr, POS=POS, EA.incidence=A1, OA.incidence=A2, EA.prognosis=B1, OA.prognosis=B2,
+  # check which ID cols are present in data
+  snp_cols <- grep("^SNP", names(dat), ignore.case = FALSE, value = TRUE)
+  pos_cols <- grep("^POS", names(dat), ignore.case = FALSE, value = TRUE)
+  chr_cols <- grep("^CHR", names(dat), ignore.case = FALSE, value = TRUE)
+  gene_cols <- grep("^GENE", names(dat), ignore.case = FALSE, value = TRUE)
+  cols <- c(snp_cols, pos_cols, chr_cols, gene_cols)
+  # Stop if nothing of the ID cols present
+  if(length(cols) == 0) {
+    stop("No columns for either SNP, POS, CHR or GENE are present!")
+  }
+  # Extract the ID cols, then arrange the harmonised data
+  dat <- dat[, cols, with = FALSE]
+  dat <- dat[, ':='(EA.incidence=A1, OA.incidence=A2, EA.prognosis=B1, OA.prognosis=B2,
                     BETA.incidence=betaA, SE.incidence=seA, Pval.incidence=pA, EAF.incidence=fA,
                     BETA.prognosis=betaB, SE.prognosis=seB, Pval.prognosis=pB, EAF.prognosis=fB,
-                    remove=remove, palindromic=palindromic)
+                    remove=remove, palindromic=palindromic)]
 
+  dat <- as.data.frame(dat)
   attr(dat, "info") <- jinfo
   return(dat)
 }
