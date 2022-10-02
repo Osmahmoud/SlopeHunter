@@ -21,7 +21,7 @@
 #' @return Data frame
 #' @importFrom ieugwasr ld_clump
 
-LD_prune <- function(dat, clump_kb=250, clump_r2=0.1, Random = TRUE, clump_p1=1, local=FALSE, ref_pop="EUR", seed = 77777)
+LD_prune <- function(dat, clump_kb=250, clump_r2=0.1, Random = TRUE, clump_p1=1, local=FALSE, ref_pop="EUR", ref_bfile, seed = 77777)
 {
 
   if(!is.data.frame(dat)) stop("Expecting data.frame or data.table returned from 'harmonise_effects'")
@@ -52,12 +52,13 @@ LD_prune <- function(dat, clump_kb=250, clump_r2=0.1, Random = TRUE, clump_p1=1,
   if(local) {
     # Pruning using local machine
     message("pruning on the local machine using PLINK")
-    out <- NA  # TEMP value - to be replaced by correct coding
+    if(missing(ref_bfile)) {stop("ref_bfile should be given if you set local = TRUE. You can use the MRC-IEU GWAS API for pruning by setting local = FALSE")}
+    out <- ld_local(variants, clump_kb=clump_kb, clump_r2=clump_r2, clump_p1=clump_p1, bfile=ref_bfile)
   } else {
     # Pruning using API
     out <- ieugwasr::ld_clump(variants, clump_kb=clump_kb, clump_r2=clump_r2, clump_p=clump_p1, pop = ref_pop)
   }
 
-  Keep <- dat$SNP %in% out$rsid
-  return(dat[Keep, ])
+  Keep <- dat[dat$SNP %in% out$rsid, ]
+  return(as.data.frame(Keep))
 }
