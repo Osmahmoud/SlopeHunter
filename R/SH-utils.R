@@ -167,3 +167,42 @@ shclust <- function(gwas, pi0, sxy1){
 
   return(list(b=b, bse=bse, b_CI=b_CI, iter=iter, pi0=pi0, entropy=entropy, Fit=Fit))
 }
+
+
+
+
+
+#'
+#'
+#'
+#' Check and download PLINK 1.90 executables according to the sysname, and return its path
+#' @importFrom utils download.file
+download_plink <- function() {
+  # Identify operating system
+  os <- Sys.info()[["sysname"]]
+  # Identify the target executable based on os
+  exename <- ifelse(os == "Windows", "plink.exe", "plink")
+  # Initiate a destinagtion directory in which the executable will be stored
+  dest <- file.path(system.file(package = "SlopeHunter"), "bin")
+  # Create bin folder in the package directory and download specified executable into it (if not exist)
+  if (!dir.exists(dest)) dir.create(dest)
+  # Full path of the executable file after downloaded
+  destfile <- file.path(dest, exename)
+
+  if(!file.exists(destfile)) {
+    # Get the full URL to download the executable file
+    urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/master/plink_binaries/"
+    urlfull <- paste0(urlpref, os, "/", exename)
+    err <- try(download.file(url = urlfull, destfile = destfile))
+    if (!inherits(err, "try-error")) {
+      message("PLINK 1.90 executable has been downloaded successifully.")
+    } else {
+      stop("PLINK 1.90 executable couldn't be downlaoded!")
+    }
+
+  } else {
+    message("PLINK executable is already available on your local system and will be used for clumping.")
+  }
+
+  return(destfile)
+}

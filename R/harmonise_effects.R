@@ -214,7 +214,6 @@ harmonise_dataset <- function(dat)
                     BETA.prognosis=betaB, SE.prognosis=seB, Pval.prognosis=pB, EAF.prognosis=fB,
                     remove=remove, palindromic=palindromic)]
 
-  dat <- as.data.frame(dat)
   attr(dat, "info") <- jinfo
   return(dat)
 }

@@ -61,7 +61,7 @@ format_data = function (dat, type = "incidence", snps = NULL,
   dat <- dat[, SNP:= gsub("[[:space:]]", "", SNP)]
   ## Remove NAs
   if (any(is.na(dat$SNP))) {
-    warning("Excluding SNPs with missing rsID ...")
+    warning("Excluding ", sum(is.na(dat$SNP)), " SNPs with missing rsID ...")
     dat <- dat[!is.na(SNP)]
   }
   ## Remove duplicated SNPs
