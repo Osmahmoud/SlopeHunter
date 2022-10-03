@@ -19,6 +19,7 @@ devtools::check()
 
 
 library("SlopeHunter")
+utils::packageVersion("SlopeHunter")
 data("data_example")
 head(data_example)
 ?data_example
