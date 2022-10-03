@@ -51,6 +51,10 @@ plot.SH <- function(x, what= c("clusters", "classification", "uncertainty", "den
 #' @import dplyr
 #' @importFrom stats sd cov na.omit pt
 shclust <- function(gwas, pi0, sxy1){
+  # binding variable locally to the function:
+  ## To avoid Notes: e.g. "shclust: no visible binding for global variable ‘xbeta’"
+  xbeta <- ybeta <- clusters <- NULL
+
   sx0 = sx1 = gwas %>% summarise(sd(xbeta)) %>% pull
   sy0 = sy1 = gwas %>% summarise(sd(ybeta)) %>% pull
   dir0 = gwas %>% summarise(cov(xbeta, ybeta)) %>% pull %>% sign()

@@ -15,13 +15,15 @@ harmonise_effects(
   beta_cols = c("BETA.incidence", "BETA.prognosis"),
   se_cols = c("SE.incidence", "SE.prognosis"),
   EA_cols = c("EA.incidence", "EA.prognosis"),
-  OA_cols = c("OA.incidence", "OA.prognosis")
+  OA_cols = c("OA.incidence", "OA.prognosis"),
+  chr_cols = c("CHR.incidence", "CHR.prognosis"),
+  gene_col = c("GENE.incidence", "GENE.prognosis")
 )
 }
 \arguments{
-\item{incidence_dat}{data.frame with data for incidence. It is recommended to be an output from \code{read_incidence}. If not, it tries to format it before harmonisation.}
+\item{incidence_dat}{data.table for incidence data. It is recommended to be an output from \code{read_incidence}. If not, it tries to format it before harmonisation.}
 
-\item{prognosis_dat}{data.frame with data for prognosis. It is recommended to be an output from \code{read_prognosis}. If not, it tries to format it before harmonisation.}
+\item{prognosis_dat}{data.table for prognosis data. It is recommended to be an output from \code{read_prognosis}. If not, it tries to format it before harmonisation.}
 
 \item{incidence_formatted}{Logical indicationg whether \code{incidence_dat} is formatted using \code{read_incidence}.}
 
@@ -40,12 +42,16 @@ harmonise_effects(
 \item{EA_cols}{A vector of length 2 specifying the name of the effect allele columns in the incidence and prognosis datasets respectively.}
 
 \item{OA_cols}{A vector of length 2 specifying the name of the non-effect allele columns in the incidence and prognosis datasets respectively.}
+
+\item{chr_cols}{A vector of length 2 specifying the name of the chromosome columns in the incidence and prognosis datasets respectively.}
+
+\item{gene_col}{A vector of length 2 specifying the name of the gene columns in the incidence and prognosis datasets respectively.}
 }
 \value{
 A data.frame with harmonised effects and alleles
 }
 \description{
-Harmonise the alleles and effects between the incidence and prognosis
+Harmonise the alleles and effects between the incidence and prognosis (inspired by https://github.com/MRCIEU/TwoSampleMR/blob/master/R/harmonise.R)
 }
 \details{
 In order to perform Slope-Hunter analysis the effect of a SNP on an incidence and prognosis traits must be harmonised to be

@@ -1,6 +1,6 @@
 #' Format input data
 #'
-#' Reads in and format input data. It checks and organises columns for use with Slope-Hunter analyses.
+#' Reads in and format input data. It checks and organises columns for Slope-Hunter analyses.
 #' Infers p-values when possible from beta and se.
 #'
 #' @md
@@ -20,7 +20,7 @@
 #' @param min_pval Minimum allowed p-value. The default is `1e-200`.
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
-#' @importFrom data.table data.table setnames setcolorder
+#' @importFrom data.table data.table setnames setcolorder :=
 #' @importFrom stats pnorm
 #' @export
 #' @return data frame
@@ -31,6 +31,11 @@ format_data = function (dat, type = "incidence", snps = NULL,
                         other_allele_col="OA", gene_col="GENE", chr_col = "CHR", pos_col="POS",
                         min_pval=1e-200, log_pval=FALSE)
 {
+  # binding variable locally to the function:
+  ## To avoid Notes: e.g. "format_data: no visible binding for global variable ‘SNP’"; "format_data: no visible binding for global variable ‘BETA.outcome’"
+  SNP <- BETA.outcome <- SE.outcome <- PVAL.outcome <- PVAL_origin.outcome <- EAF.outcome <-
+    EA.outcome <- OA.outcome <- SH_keep.outcome <- NULL
+
   all_cols <- c(snp_col, beta_col, se_col, pval_col, eaf_col, effect_allele_col, other_allele_col, gene_col, chr_col, pos_col)
 
   # check given names ####

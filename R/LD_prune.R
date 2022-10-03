@@ -15,8 +15,7 @@ download_plink <- function() {
 
   if(!file.exists(destfile)) {
     # Get the full URL to download the executable file
-    # urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/dev_1.0.0/plink_binaries/"  # Link for dev stage
-    urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/master/plink_binaries/"
+    urlpref <- "https://data-science.essex.ac.uk/fileserve/ld/plink_binaries/"
     urlfull <- paste0(urlpref, os, "/", exename)
     err <- try(download.file(url = urlfull, destfile = destfile))
     if (!inherits(err, "try-error")) {
@@ -45,8 +44,8 @@ download_plink <- function() {
 #' @param dat Dataframe. Must have a variant name column (`rsid`) and pval column called (`pval`).
 #' @param clump_kb Clumping window, default is `250`.
 #' @param clump_r2 Clumping r-squared threshold, default is `0.1`.
-#' @param Random Logical, if `TRUE` (the default), SNPs will be randomly pruned. Otherwise, based on p-values.
 #' @param clump_p1 Clumping sig level for index SNPs, default is `1`.
+#' @param bfile Path to the bed/bim/fam LD reference (e.g. "1kg.v3/EUR" for local 1000 EUR ref. population file).
 #' @importFrom data.table fwrite data.table fread
 #'
 ld_local <- function(dat, clump_kb=250, clump_r2=0.1, clump_p1=1, bfile) {
@@ -110,6 +109,7 @@ ld_local <- function(dat, clump_kb=250, clump_r2=0.1, clump_p1=1, bfile) {
 #' will be used for clumping. Otherwise, your local machine will be used for clumping given that you
 #' provide a bed/bim/fam LD reference dataset.
 #' @param ref_pop Super-population to use as reference panel at the API (when \code{local} is FALSE). Default = `"EUR"`.
+#' @param ref_bfile Path to the bed/bim/fam LD reference (e.g. "1kg.v3/EUR" for local 1000 EUR ref. population file). If \code{local}=TRUE, then this should be provided.
 #' @param seed Random number seed for random pruning
 #'
 #' @export

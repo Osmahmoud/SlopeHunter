@@ -1,6 +1,6 @@
 #' Harmonise and format data for Slope-Hunter
 #'
-#' Harmonise the alleles and effects between the incidence and prognosis
+#' Harmonise the alleles and effects between the incidence and prognosis (inspired by https://github.com/MRCIEU/TwoSampleMR/blob/master/R/harmonise.R)
 #'
 #' In order to perform Slope-Hunter analysis the effect of a SNP on an incidence and prognosis traits must be harmonised to be
 #' relative to the same allele.
@@ -23,6 +23,7 @@
 #' for non-palindromic SNPs (i.e. flip the sign of effects so that the effect allele is the same in both datasets), and drop all palindromic SNPs from the analysis (i.e. with the allele A/T or G/C).
 #' The alleles that do not match between data sets (e.g T/C in one data set and A/C in the other) will also be dropped.
 #'
+#' @importFrom data.table as.data.table
 #' @return A data.frame with harmonised effects and alleles
 #' @export
 
@@ -96,23 +97,6 @@ harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=
   }
 
   message("Harmonising effects and alleles ...")
-
-  #TEMP!!!!!!!1
-  ## give unique names for common columns (e.g. SNP, CHR & POS)
-  names(dat)[names(dat) == "CHR.incidence"] <- "CHR"
-  names(dat)[names(dat) == "POS.incidence"] <- "POS"
-
-  ## give unique names for common columns (e.g. SNP, CHR & POS)
-  if(sum(grepl("^rs\\d+$", dat$SNP.x)) > sum(grepl("^rs\\d+$", dat$SNP.y))){
-    names(dat)[names(dat) == "SNP.x"] <- "SNP"
-  } else {
-    names(dat)[names(dat) == "SNP.y"] <- "SNP"
-  }
-  names(dat)[names(dat) == "CHR.incidence"] <- "CHR"
-  names(dat)[names(dat) == "POS.incidence"] <- "POS"
-  #END TEMP!!!!!!!!!!
-
-
   dat <- harmonise_dataset(dat)
   return(dat)
 }
@@ -120,7 +104,7 @@ harmonise_effects <- function(incidence_dat, prognosis_dat, incidence_formatted=
 
 
 #'
-#' @importFrom data.table data.table
+#' @importFrom data.table data.table :=
 harmonise_dataset <- function(dat)
 {
   A1=dat$EA.incidence

@@ -19,7 +19,7 @@ Depends: R (>= 3.5.0)
 Imports: ggplot2 (>= 2.1.0), mclust, plotly, stats, ieugwasr, data.table (>= 1.14.2), dplyr, tools
 Suggests: knitr (>= 1.12), rmarkdown (>= 0.9)
 VignetteBuilder: knitr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Repository: Osmahmoud
 Author: Osama Mahmoud [aut, cre, cph](<https://orcid.org/0000-0003-0342-6704>)
 Maintainer: Osama Mahmoud <o.mahmoud@essex.ac.uk>
