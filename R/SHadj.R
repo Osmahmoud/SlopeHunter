@@ -31,7 +31,7 @@ SHadj = function(x, dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="SE.
   names(dat)[names(dat) == ybeta_col] <- "ybeta"
   names(dat)[names(dat) == yse_col] <- "yse"
 
-  Sh.b <- x$Sh.b
+  Sh.b <- x$b
   bse  <- x$bse
 
   dat$ybeta.adj <- dat$ybeta - Sh.b * dat$xbeta
