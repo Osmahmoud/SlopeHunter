@@ -169,14 +169,15 @@ shclust <- function(gwas, pi0, sxy1){
 }
 
 
-#' Check and download PLINK 1.90 executables according to the sysname, and return its path
+#' Check and download PLINK 1.90 executable suitable for the operating system, and return its path
+#' Inspired by https://github.com/MRCIEU/genetics.binaRies
 #' @importFrom utils download.file
 download_plink <- function() {
   # Identify operating system
   os <- Sys.info()[["sysname"]]
   # Identify the target executable based on os
   exename <- ifelse(os == "Windows", "plink.exe", "plink")
-  # Initiate a destinagtion directory in which the executable will be stored
+  # Initiate a destination directory in which the executable will be stored
   dest <- file.path(system.file(package = "SlopeHunter"), "bin")
   # Create bin folder in the package directory and download specified executable into it (if not exist)
   if (!dir.exists(dest)) dir.create(dest)
@@ -194,10 +195,11 @@ download_plink <- function() {
     if (!inherits(err, "try-error")) {
       message("PLINK 1.90 executable has been downloaded successifully.")
 
-      # Set mode to allow execute plink
-      shell <- ifelse(Sys.info()[["sysname"]] == "Windows", "cmd", "sh")
-      Chmod_command <- paste0("chmod 755 ", shQuote(destfile, type=shell))
-      system(Chmod_command)
+      # If Unix/Linux, Set mode to allow execute plink
+      if(os != "Windows") {
+        Chmod_command <- paste0("chmod 755 ", shQuote(destfile, type="sh"))
+        system(Chmod_command)
+      }
 
     } else {
       stop("PLINK 1.90 executable couldn't be downlaoded!")
@@ -212,6 +214,7 @@ download_plink <- function() {
 
 
 #' clump function using local plink binary and ld reference dataset
+#' This function is modified from: https://github.com/MRCIEU/ieugwasr/blob/master/R/ld_clump.R
 #' @param dat Dataframe. Must have a variant name column (`rsid`) and pval column called (`pval`).
 #' @param clump_kb Clumping window, default is `250`.
 #' @param clump_r2 Clumping r-squared threshold, default is `0.1`.
