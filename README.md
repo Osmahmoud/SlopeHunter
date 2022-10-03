@@ -1,6 +1,6 @@
 # SlopeHunter: An R package for collider bias correction in conditional GWAS
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5617863.svg)](https://doi.org/10.5281/zenodo.5617863)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5617862.svg)](https://doi.org/10.5281/zenodo.5617862)
 
 `SlopeHunter` is an R package containing tools for correcting for collider bias in conditional Genome-Wide Association Studies (GWAS). For bug reports, feature requests, and questions on technical issues of using the software, please open an [Issue](/../../issues).
 
@@ -90,8 +90,8 @@ help(slopehunter)
 
 # Citation
 
-> Mahmoud O. et al, Slope-Hunter: A robust method for collider bias correction in genome-wide association studies (doi: <https://doi.org/10.1101/2020.01.31.928077>) - submitted for publication.
-
+> Mahmoud, O., Dudbridge, F., Davey Smith, G. et al. A robust method for collider bias correction in conditional genome-wide association studies. Nature Communications 13, 619 (2022). (doi: <https://doi.org/10.1038/s41467-022-28119-9>)
+ 
 # License
 
 This project is covered under the **GNU General Public License, version 3.0 (GPL-3.0)**.
