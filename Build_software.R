@@ -11,8 +11,9 @@ wflow_publish()
 require(devtools)
 devtools::missing_s3()  #list all S3 methods that you’ve forgotten to export
 devtools::document()
-# devtools::build_vignettes()
+devtools::build_vignettes()
 devtools::build()
+devtools::build(binary = TRUE)
 devtools::install(build_vignettes = TRUE)
 devtools::check()
 
