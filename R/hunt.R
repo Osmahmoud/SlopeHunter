@@ -52,6 +52,10 @@ hunt = function(dat, snp_col="SNP", xbeta_col="BETA.incidence", xse_col="SE.inci
                 xp_thresh=0.001, init_pi = 0.6, init_sigmaIP = 1e-5, Bootstrapping = TRUE, M = 100, seed = 777,
                 Plot=TRUE, show_adjustments = FALSE){
 
+  # binding variable locally to the function:
+  ## To avoid Notes: e.g. "hunt: no visible binding for global variable ‘xp’"; "hunt: no visible binding for global variable ‘xbeta’"
+  xp <- xbeta <- ybeta <- clusters <- yse <- xse <- ybeta_adj <- yse_adj <- NULL
+
   all_cols <- c(snp_col, xbeta_col, xse_col, xp_col, ybeta_col, yse_col, yp_col)
   i <-  names(dat) %in% all_cols
   if (sum(i) == 0)

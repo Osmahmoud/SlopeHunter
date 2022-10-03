@@ -1,39 +1,3 @@
-#' Calculate Euclidean distance from origin
-#' @param x Vector of x-axis values
-#' @param y Vector of y-axis values
-#' @param ydominant Logical, if TRUE, larger influence will be given to the y-axis values
-#' @return Vector of distances
-Euclid.dist = function(x, y, ydominant = FALSE){
-  if(ydominant){
-    xw = max(abs(x))    # derive scale for x-values
-    yw = max(abs(y))    # derive scale for y-values
-    D = (x/xw)^2 + abs(y/yw)
-    D / max(D)
-  }
-  else{
-    sqrt(x^2 + y^2)
-  }
-}
-
-#' @importFrom stats var
-hOlkin.adj <- function(Data, b.raw, xbeta, xse, G1.class)
-{
-  Dat <- subset(Data, Fitclass == G1.class)
-  Vx  <- var(Dat[[xbeta]])
-  cVx <- Vx - (mean(Dat[[xse]])^2)
-  b.raw * Vx / cVx
-}
-
-#' @importFrom stats sd
-std <- function(beta, se)
-{
-  Mu <- mean(beta, na.rm = TRUE)
-  Sigma <- sd(beta, na.rm = TRUE)
-  beta.std <- (beta-Mu)/Sigma
-  se.std <- se/Sigma
-  return(list(beta.std=beta.std, se.std=se.std, Mu=Mu, Sigma=Sigma))
-}
-
 #' Plotting model for Slope-Hunter clustering
 #'
 #' @param x Output from \code{slopehunter}.
@@ -87,6 +51,10 @@ plot.SH <- function(x, what= c("clusters", "classification", "uncertainty", "den
 #' @import dplyr
 #' @importFrom stats sd cov na.omit pt
 shclust <- function(gwas, pi0, sxy1){
+  # binding variable locally to the function:
+  ## To avoid Notes: e.g. "shclust: no visible binding for global variable ‘xbeta’"
+  xbeta <- ybeta <- clusters <- NULL
+
   sx0 = sx1 = gwas %>% summarise(sd(xbeta)) %>% pull
   sy0 = sy1 = gwas %>% summarise(sd(ybeta)) %>% pull
   dir0 = gwas %>% summarise(cov(xbeta, ybeta)) %>% pull %>% sign()
@@ -167,3 +135,4 @@ shclust <- function(gwas, pi0, sxy1){
 
   return(list(b=b, bse=bse, b_CI=b_CI, iter=iter, pi0=pi0, entropy=entropy, Fit=Fit))
 }
+

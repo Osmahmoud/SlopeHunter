@@ -6,8 +6,6 @@
 \usage{
 read_prognosis(
   filename,
-  gz = TRUE,
-  sep = " ",
   snp_col = "SNP",
   beta_col = "BETA",
   se_col = "SE",
@@ -24,10 +22,6 @@ read_prognosis(
 }
 \arguments{
 \item{filename}{Filename. Must have header with at least the \code{SNP}, \code{beta}, \code{se} and \code{EA}columns present.}
-
-\item{gz}{whether the given data file is compressed with the gzip (\code{.gz} file). The default is \code{TRUE}.}
-
-\item{sep}{Specify delimeter in file if \code{gz} is FALSE. The default is a space, i.e. \code{" "}.}
 
 \item{snp_col}{Required name of column with SNP rs IDs. The default is \code{"SNP"}.}
 

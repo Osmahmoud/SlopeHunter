@@ -57,6 +57,6 @@ format_data(
 data frame
 }
 \description{
-Reads in and format input data. It checks and organises columns for use with Slope-Hunter analyses.
+Reads in and format input data. It checks and organises columns for Slope-Hunter analyses.
 Infers p-values when possible from beta and se.
 }

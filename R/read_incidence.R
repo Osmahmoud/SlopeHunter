@@ -3,9 +3,7 @@
 #' Reads in incidence data. Checks and organises columns for use with the Slope-Hunter analyses. Infers p-values when possible from beta and se.
 #'
 #' @md
-#' @param filename Filename. Must have header with at least the `SNP`, `beta`, `se` and `EA`columns present.
-#' @param gz whether the given data file is compressed with the gzip (`.gz` file). The default is `TRUE`.
-#' @param sep Specify delimeter in file if `gz` is FALSE. The default is a space, i.e. `" "`.
+#' @param filename Filename (formatted as .gz, .csv or .txt). Must have header with at least the `SNP`, `beta`, `se` and `EA`columns present.
 #' @param snp_col Required name of column with SNP rs IDs. The default is `"SNP"`.
 #' @param beta_col Required name of column with effect sizes. The default is `"BETA"`.
 #' @param se_col Required name of column with standard errors. The default is `"SE"`.
@@ -20,20 +18,18 @@
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
 #' @importFrom data.table fread
-#' @importFrom utils read.table
+#' @importFrom tools file_ext
 #' @export
 #' @return data frame
-read_incidence = function(filename, gz = TRUE, sep= " ", snp_col="SNP", beta_col="BETA", se_col="SE",
+read_incidence = function(filename, snp_col="SNP", beta_col="BETA", se_col="SE",
                           pval_col="PVAL", eaf_col="EAF", effect_allele_col="EA",
                           other_allele_col="OA", gene_col="GENE", chr_col = "CHR", pos_col="POS",
                           min_pval=1e-200, log_pval=FALSE){
 
-  if(gz){incidence_dat <- utils::read.table(gzfile(filename), header = TRUE)} else {
-    incidence_dat <- data.table::fread(filename, header=TRUE, sep=sep)
-  }
+  incidence_dat <- data.table::fread(filename)
 
   incidence_dat <- format_data(
-    as.data.frame(incidence_dat),
+    incidence_dat,
     type="incidence",
     snps=NULL,
     snp_col=snp_col,
@@ -50,9 +46,8 @@ read_incidence = function(filename, gz = TRUE, sep= " ", snp_col="SNP", beta_col
     log_pval=log_pval
   )
 
-  incidence_dat$data_source.incidence <- ifelse(gz, "compressed (gzip)", "textfile")
+  ext = tools::file_ext(filename)
+  incidence_dat$data_source.incidence <- ifelse(ext == "gz", "compressed (gzip)", paste0("textfile (", ext, ")"))
+
   return(incidence_dat)
 }
-
-
-

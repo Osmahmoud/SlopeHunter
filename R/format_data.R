@@ -1,6 +1,6 @@
 #' Format input data
 #'
-#' Reads in and format input data. It checks and organises columns for use with Slope-Hunter analyses.
+#' Reads in and format input data. It checks and organises columns for Slope-Hunter analyses.
 #' Infers p-values when possible from beta and se.
 #'
 #' @md
@@ -20,232 +20,193 @@
 #' @param min_pval Minimum allowed p-value. The default is `1e-200`.
 #' @param log_pval The p-value is -log10(P). The default is `FALSE`.
 #'
+#' @importFrom data.table data.table setnames setcolorder :=
+#' @importFrom stats pnorm
 #' @export
 #' @return data frame
-#' @importFrom stats pnorm
 
-
-format_data = function (dat, type = "incidence", snps = NULL, 
+format_data = function (dat, type = "incidence", snps = NULL,
                         snp_col="SNP", beta_col="BETA", se_col="SE",
                         pval_col="PVAL", eaf_col="EAF", effect_allele_col="EA",
                         other_allele_col="OA", gene_col="GENE", chr_col = "CHR", pos_col="POS",
                         min_pval=1e-200, log_pval=FALSE)
 {
+  # binding variable locally to the function:
+  ## To avoid Notes: e.g. "format_data: no visible binding for global variable ‘SNP’"; "format_data: no visible binding for global variable ‘BETA.outcome’"
+  SNP <- BETA.outcome <- SE.outcome <- PVAL.outcome <- PVAL_origin.outcome <- EAF.outcome <-
+    EA.outcome <- OA.outcome <- SH_keep.outcome <- NULL
+
   all_cols <- c(snp_col, beta_col, se_col, pval_col, eaf_col, effect_allele_col, other_allele_col, gene_col, chr_col, pos_col)
-  
+
+  # check given names ####
   i <- names(dat) %in% all_cols
-  if (sum(i) == 0) {
+  ## Error if non of the given names are present in the data
+  if (sum(i) == 0)
+  {
     stop("None of the specified columns present!")
   }
-  dat <- dat[, i]
-
-  # Check if columns required for SH are present
+  ## data.table (FAQ 1.5): select the columns whose names are given by the user (stored in i)
+  Sel = names(dat)[i]
+  dat <- dat[, Sel, with = FALSE]
+  ## Check if columns required for SH are present
   SH_cols_req = c(snp_col, beta_col, se_col, effect_allele_col, other_allele_col)
+  ## Error if not ALL of the essential columns for SH present
   if (!all(SH_cols_req %in% names(dat))){
     stop("The following columns are not present and are required for the Slope-Hunter analysis\n", paste(SH_cols_req[!SH_cols_req %in% names(dat)]), collapse="\n")
   }
-  
-  # Format SNP IDs to the standard: lower-case letters, remove spaces & exclude NAs
-  names(dat)[names(dat) == snp_col] <- "SNP"
-  snp_col <- "SNP"
-  dat$SNP <- tolower(dat$SNP)
-  dat$SNP <- gsub("[[:space:]]", "", dat$SNP)
-  dat <- subset(dat, !is.na(SNP))
-  
-  if (!is.null(snps)){
-    dat <- subset(dat, SNP %in% snps)
+
+  # check SNP ####
+  ## Format SNP IDs to the standard: lower-case letters, remove spaces & exclude NAs ####
+  data.table::setnames(dat, snp_col, "SNP")
+  ## Extract only a list of SNPs if <snps> is given
+  if (!is.null(snps)) {
+    dat <- dat[SNP %in% snps]
   }
-  
-  if (log_pval){
-    dat$PVAL <- 10^-dat$PVAL
+  dat <- dat[, SNP:= tolower(SNP)]
+  dat <- dat[, SNP:= gsub("[[:space:]]", "", SNP)]
+  ## Remove NAs
+  if (any(is.na(dat$SNP))) {
+    warning("Excluding ", sum(is.na(dat$SNP)), " SNPs with missing rsID ...")
+    dat <- dat[!is.na(SNP)]
   }
-  
-  # Remove duplicated SNPs
+  ## Remove duplicated SNPs
   dup <- duplicated(dat$SNP)
-  if (any(dup)){
-    warning("Duplicated SNPs present in data. Just keeping the first instance for:\n",
-            paste(dat$SNP[dup], collapse = "\n"))
-    dat <- dat[!dup, ]
-  }
-  
-  # initiate indicator for valid SNPs for the SH analysis
-  dat$SH_keep.outcome <- TRUE
-  
-  # Check beta
-  i <- which(names(dat) == beta_col)[1]
-  if(!is.na(i))
-  {
-    names(dat)[i] <- "BETA.outcome"
-    if(!is.numeric(dat$BETA.outcome))
-    {
-      warning("beta column is not numeric. Coercing...")
-      dat$BETA.outcome <- as.numeric(dat$BETA.outcome)
-    }
-    index <- !is.finite(dat$BETA.outcome)
-    index[is.na(index)] <- TRUE
-    dat$BETA.outcome[index] <- NA
-  }
-  
-  # Check se
-  i <- which(names(dat) == se_col)[1]
-  if(!is.na(i))
-  {
-    names(dat)[i] <- "SE.outcome"
-    if(!is.numeric(dat$SE.outcome))
-    {
-      warning("se column is not numeric. Coercing...")
-      dat$SE.outcome <- as.numeric(dat$SE.outcome)
-    }
-    index <- !is.finite(dat$SE.outcome) | dat$SE.outcome <= 0
-    index[is.na(index)] <- TRUE
-    dat$SE.outcome[index] <- NA
-  }
-  
-  # Check pval
-  i <- which(names(dat) == pval_col)[1]
-  if(!is.na(i))
-  {
-    names(dat)[i] <- "PVAL.outcome"
-    if(!is.numeric(dat$PVAL.outcome))
-    {
-      warning("pval column is not numeric. Coercing...")
-      dat$PVAL.outcome <- as.numeric(dat$PVAL.outcome)
-    }
-    index <- !is.finite(dat$PVAL.outcome) | dat$PVAL.outcome < 0 | dat$PVAL.outcome > 1
-    index[is.na(index)] <- TRUE
-    dat$PVAL.outcome[index] <- NA
-    index <- dat$PVAL.outcome < min_pval
-    index[is.na(index)] <- FALSE
-    dat$PVAL.outcome[index] <- min_pval
-    dat$PVAL_origin.outcome <- "reported"
-    if(any(is.na(dat$PVAL.outcome)))
-    {
-      index <- is.na(dat$PVAL.outcome)
-      dat$PVAL.outcome[index] <- 2*pnorm(abs(dat$BETA.outcome[index])/dat$SE.outcome[index], lower.tail=FALSE)
-      dat$PVAL_origin.outcome[index] <- "inferred"
-    }
-  }
-  
-  # If no pval column then create it from beta and se
-  if(!"PVAL.outcome" %in% names(dat))
-  {
-    message("Inferring p-values")
-    dat$PVAL.outcome <- 2*pnorm(abs(dat$beta.outcome)/dat$se.outcome, lower.tail=FALSE)
-    dat$PVAL_origin.outcome <- "inferred"
-  }
-  
-  # Check eaf
-  i <- which(names(dat) == eaf_col)[1]
-  if(!is.na(i))
-  {
-    names(dat)[i] <- "EAF.outcome"
-    if(!is.numeric(dat$EAF.outcome))
-    {
-      warning("eaf column is not numeric. Coercing...")
-      dat$EAF.outcome <- as.numeric(dat$EAF.outcome)
-    }
-    index <- !is.finite(dat$EAF.outcome) | dat$EAF.outcome <= 0 | dat$EAF.outcome >= 1
-    index[is.na(index)] <- TRUE
-    dat$EAF.outcome[index] <- NA
-  }
-  
-  # Check effect_allele
-  i <- which(names(dat) == effect_allele_col)[1]
-  if(!is.na(i))
-  {
-    names(dat)[i] <- "EA.outcome"
-    if(is.logical(dat$EA.outcome))
-    {
-      dat$EA.outcome <- substr(as.character(dat$EA.outcome), 1, 1)
-    }
-    if(!is.character(dat$EA.outcome))
-    {
-      warning("effect_allele column is not character data. Coercing...")
-      dat$EA.outcome <- as.character(dat$EA.outcome)
-    }
-    
-    dat$EA.outcome <- toupper(dat$EA.outcome)
-    index <- !(grepl("^[ACTG]+$", dat$EA.outcome) | dat$EA.outcome %in% c("D", "I"))
-    index[is.na(index)] <- TRUE
-    if(any(index))
-    {
-      warning("effect_allele column has some values that are not A/C/T/G or an indel comprising only these characters or D/I. These SNPs will be excluded.")
-      dat$EA.outcome[index] <- NA
-      dat$SH_keep.outcome[index] <- FALSE
-    }
+  if (any(dup)) {
+    warning(sum(dup), " duplicated SNP rsIDs present: Just keeping the first instance ...")
+    dat <- dat[!dup]
   }
 
-  # Check other_allele
-  i <- which(names(dat) == other_allele_col)[1]
-  if(!is.na(i))
-  {
-    names(dat)[i] <- "OA.outcome"
-    if(is.logical(dat$OA.outcome))
-    {
-      dat$OA.outcome <- substr(as.character(dat$OA.outcome), 1, 1)
+
+  # Check beta ####
+  data.table::setnames(dat, beta_col, "BETA.outcome")
+  ## Coercing to numeric if not
+  if(!is.numeric(dat$BETA.outcome)) {
+    warning("beta column is not numeric. Coercing...")
+    dat <- dat[, BETA.outcome:= as.numeric(BETA.outcome)]
+  }
+  ## replace infinite values (NA, NaN, Inf or -Inf), if any, with NA
+  dat <- dat[, BETA.outcome:= ifelse(is.finite(BETA.outcome), BETA.outcome, NA)]
+
+
+  # Check se ####
+  data.table::setnames(dat, se_col, "SE.outcome")
+  ## Coercing to numeric if not
+  if(!is.numeric(dat$SE.outcome)) {
+    warning("se column is not numeric. Coercing...")
+    dat <- dat[, SE.outcome:= as.numeric(SE.outcome)]
+  }
+  ## replace infinite values (NA, NaN, Inf or -Inf), if any, with NA
+  dat <- dat[, SE.outcome:= ifelse(is.finite(SE.outcome), SE.outcome, NA)]
+
+
+  # Check pval ####
+  ## pval column is given
+  if(pval_col %in% names(dat)) {
+    data.table::setnames(dat, pval_col, "PVAL.outcome")
+    ## Coercing to numeric if not
+    if(!is.numeric(dat$PVAL.outcome)) {
+      warning("pval column is not numeric. Coercing...")
+      dat <- dat[, PVAL.outcome:= as.numeric(PVAL.outcome)]
     }
-    if(!is.character(dat$OA.outcome))
-    {
-      warning("other_allele column is not character data. Coercing...")
-      dat$OA.outcome <- as.character(dat$OA.outcome)
+    ## Transforming to the p-value if it was given as `-log10(p-value)`
+    if (log_pval) {
+      message("The p-value column is given as -log10(p-value). Transforming to the p-values ...")
+      dat <- dat[, PVAL.outcome:= 10^-PVAL.outcome]
     }
-    
-    dat$OA.outcome <- toupper(dat$OA.outcome)
-    index <- ! (grepl("^[ACTG]+$", dat$OA.outcome) | dat$OA.outcome %in% c("D", "I"))
-    index[is.na(index)] <- TRUE
-    if(any(index))
-    {
-      warning("other_allele column has some values that are not A/C/T/G or an indel comprising only these characters or D/I. These SNPs will be excluded")
-      dat$OA.outcome[index] <- NA
-      dat$SH_keep.outcome[index] <- FALSE
+    ## replace infinite values (NA, NaN, Inf or -Inf) and implausible values, if any, with NA
+    dat <- dat[, PVAL.outcome:= ifelse(is.finite(PVAL.outcome) & PVAL.outcome >= 0 & PVAL.outcome <= 1, PVAL.outcome, NA)]
+    ## replace extremely small values (smaller than `min_pval`), if any, with `min_pval`
+    dat <- dat[, PVAL.outcome:= ifelse(PVAL.outcome < min_pval, min_pval, PVAL.outcome)]
+    ## Label p-values as reported/inferred
+    dat <- dat[, PVAL_origin.outcome:= ifelse(!is.na(PVAL.outcome), "reported", "inferred")]
+    ## inferring p-value from `beta` and `se` if there is any missing p-values
+    dat <- dat[, PVAL.outcome:= ifelse(!is.na(PVAL.outcome), PVAL.outcome, pchisq((BETA.outcome^2)/(SE.outcome^2), 1, lower.tail = FALSE))]
+
+  ## No pval column is given - inferring it
+  } else {
+    message("Inferring p-values ...")
+    dat <- dat[, PVAL.outcome:= pchisq((BETA.outcome^2)/(SE.outcome^2), 1, lower.tail = FALSE)]
+    dat <- dat[, PVAL_origin.outcome:= "inferred"]
+  }
+
+
+  # Check eaf ####
+  if(eaf_col %in% names(dat)) {
+    data.table::setnames(dat, eaf_col, "EAF.outcome")
+    ## Coercing to numeric if not
+    if(!is.numeric(dat$EAF.outcome)) {
+      warning("eaf column is not numeric. Coercing...")
+      dat <- dat[, EAF.outcome:= as.numeric(EAF.outcome)]
     }
+    ## replace infinite values (NA, NaN, Inf or -Inf), if any, with NA
+    dat <- dat[, EAF.outcome:= ifelse(is.finite(EAF.outcome), EAF.outcome, NA)]
+  } else {
+    # Add in EAF col (as NA) if missing
+    dat <- dat[, EAF.outcome:= NA]
   }
-  
-  # Report gene
-  if(gene_col %in% names(dat))
-  {
-    names(dat)[which(names(dat) == gene_col)[1]] <- "GENE.outcome"
+
+
+  # Check effect_allele ####
+  data.table::setnames(dat, effect_allele_col, "EA.outcome")
+  ## Coercing to character if not
+  if(!is.character(dat$EA.outcome)) {
+    warning("effect_allele column is not character data. Coercing...")
+    dat <- dat[, EA.outcome:= as.character(EA.outcome)]
   }
-  
-  # Report chr
-  if(chr_col %in% names(dat))
-  {
-    names(dat)[which(names(dat) == chr_col)[1]] <- "CHR.outcome"
+  dat <- dat[, EA.outcome:= toupper(EA.outcome)]
+  ## replace effect_allele inputs which are not A/C/T/G or an indel into NAs
+  dat <- dat[, EA.outcome:= ifelse((grepl("^[ACTG]+$", EA.outcome) | EA.outcome %in% c("D", "I")), EA.outcome, NA)]
+  if(any(is.na(dat$EA.outcome))) {
+    warning("effect_allele column has some values that are not A/C/T/G or an indel comprising only these characters or D/I. Excluding ...")
   }
-  
-  # Report position
-  if(pos_col %in% names(dat))
-  {
-    names(dat)[which(names(dat) == pos_col)[1]] <- "POS.outcome"
+
+
+  # Check other_allele ####
+  data.table::setnames(dat, other_allele_col, "OA.outcome")
+  ## Coercing to character if not
+  if(!is.character(dat$OA.outcome)) {
+    warning("other_allele column is not character data. Coercing...")
+    dat <- dat[, OA.outcome:= as.character(OA.outcome)]
   }
-  
-  # Identify SNPs with missing required info for SH analysis
-  if(any(dat$SH_keep.outcome))
-  {
-    SHcols <- c("SNP", "BETA.outcome", "SE.outcome", "EA.outcome")
-    SHcols_present <- SHcols[SHcols %in% names(dat)]
-    dat$SH_keep.outcome <- dat$SH_keep.outcome & apply(dat[, SHcols_present], 1, function(x) !any(is.na(x)))
-    if(any(!dat$SH_keep.outcome))
-    {
-      warning("The following SNP(s) are missing required information for the SH analysis and will be excluded\n", paste(subset(dat, !SH_keep.outcome)$SNP, collapse="\n"))
-    }
+  dat <- dat[, OA.outcome:= toupper(OA.outcome)]
+  ## replace other_allele inputs which are not A/C/T/G or an indel into NAs
+  dat <- dat[, OA.outcome:= ifelse((grepl("^[ACTG]+$", OA.outcome) | OA.outcome %in% c("D", "I")), OA.outcome, NA)]
+  if(any(is.na(dat$OA.outcome))) {
+    warning("other_allele column has some values that are not A/C/T/G or an indel comprising only these characters or D/I. Excluding ...")
   }
-  
-  if(all(!dat$SH_keep.outcome))
-  {
-    warning("None of the provided SNPs can be used for SH analysis, they are missing required information.")
+
+
+  # Report gene ####
+  if(gene_col %in% names(dat)) {
+    data.table::setnames(dat, gene_col, "GENE.outcome")
   }
-  
-  # Add in missing SH cols
-  for(col in c("SNP", "BETA.outcome", "SE.outcome", "EA.outcome", "OA.outcome", "EAF.outcome"))
-  {
-    if(! col %in% names(dat))
-    {
-      dat[[col]] <- NA
-    }
+
+  # Report chr ####
+  if(chr_col %in% names(dat)) {
+    data.table::setnames(dat, chr_col, "CHR.outcome")
   }
-  
-  names(dat) <- gsub("outcome", type, names(dat))
+
+  # Report position ####
+  if(pos_col %in% names(dat)) {
+    data.table::setnames(dat, pos_col, "POS.outcome")
+  }
+
+
+  # Indicator for SNPs with complete valid data for the SH analysis ####
+  dat <- dat[, SH_keep.outcome:= ifelse(!(is.na(BETA.outcome) | is.na(SE.outcome) | is.na(EA.outcome) | is.na(OA.outcome)), TRUE, FALSE)]
+  ## check if there's any valid SNPs for the SH
+  if(any(dat$SH_keep.outcome)) {
+    message("Identified ", sum(dat$SH_keep.outcome), " valid SNPs for the Slope-Hunter analyses!")
+  } else {
+    stop("None of the provided SNPs can be used for SH analysis. They are missing essentially required information!")
+  }
+
+  # Set order of the columns
+  dat <- data.table::setcolorder(dat, c("SNP", "EA.outcome", "OA.outcome", "BETA.outcome", "SE.outcome",
+                                        "PVAL.outcome", "PVAL_origin.outcome", "EAF.outcome"))
+
+  # Rename columns
+  data.table::setnames(dat, names(dat), gsub("outcome", type, names(dat)))
   rownames(dat) <- NULL
   return(dat)
 }

@@ -10,6 +10,9 @@ LD_prune(
   clump_r2 = 0.1,
   Random = TRUE,
   clump_p1 = 1,
+  local = FALSE,
+  ref_pop = "EUR",
+  ref_bfile,
   seed = 77777
 )
 }
@@ -24,6 +27,14 @@ LD_prune(
 
 \item{clump_p1}{Clumping sig level for index SNPs, default is \code{1}.}
 
+\item{local}{Logical, if \code{FALSE} (the default), the MRC-IEU API 'http://gwas-api.mrcieu.ac.uk/'
+will be used for clumping. Otherwise, your local machine will be used for clumping given that you
+provide a bed/bim/fam LD reference dataset.}
+
+\item{ref_pop}{Super-population to use as reference panel at the API (when \code{local} is FALSE). Default = \code{"EUR"}.}
+
+\item{ref_bfile}{Path to the bed/bim/fam LD reference (e.g. "1kg.v3/EUR" for local 1000 EUR ref. population file). If \code{local}=TRUE, then this should be provided.}
+
 \item{seed}{Random number seed for random pruning}
 }
 \value{
@@ -32,6 +43,6 @@ Data frame
 \description{
 Uses PLINK clumping method ('--clump' command), where a greedy search algorithm is implemented to randomly select a variant
 (or the variant with the lowest p-value, if a user wish to), referred to as the index SNP, and remove all variants within a
-certain kb distance in linkage disequilibrium with the index SNP, based on an r-squared threshold from the 1000 Genomes reference panel phase 3 data.
-Then repeats until no variants are left.
+certain kb distance in linkage disequilibrium with the index SNP, based on an r-squared threshold from the 1000 Genomes
+reference panel phase 3 data. Then repeats until no variants are left.
 }

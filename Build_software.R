@@ -9,7 +9,7 @@ wflow_publish()
 
 ### build the R package
 require(devtools)
-#devtools::missing_s3()  #list all S3 methods that you’ve forgotten to export
+devtools::missing_s3()  #list all S3 methods that you’ve forgotten to export
 devtools::document()
 # devtools::build_vignettes()
 devtools::build()
