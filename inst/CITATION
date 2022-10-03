@@ -1,18 +1,20 @@
 citHeader("To cite 'SlopeHunter' R package in publications, please use:")
 
 citEntry(entry = "Article",
-  title = "Slope-Hunter: A robust method for index-event bias correction in genome-wide association studies of subsequent traits",
+  title = "A robust method for collider bias correction in conditional genome-wide association studies",
   author = personList(person(given="Osama", family="Mahmoud"),
                       person(given="Frank", family="Dudbridge"),
                       person(given="George", family="Davey Smith"),
                       person(given="Marcus", family="Munafo"),
                       person(given="Kate", family="Tilling")),
-  journal = "bioRxiv",
-  year = "2020",
-  url="https://doi.org/10.1101/2020.01.31.928077",
+  journal = "Nature Communications",
+  volume = "13",
+  number = "619",
+  year = "2022",
+  url="https://doi.org/10.1038/s41467-022-28119-9",
   #
   textVersion =
-  paste("Mahmoud O., Dudbrige F., Davey Smith G., Munafo M. and Tilling K (2020)",
-        "Slope-Hunter: A robust method for index-event bias correction in genome-wide association studies of subsequent traits",
-        "bioRxiv",
-        "https://doi.org/10.1101/2020.01.31.928077"))
+  paste("Mahmoud O., Dudbrige F., Davey Smith G., Munafo M. and Tilling K (2022).",
+        "A robust method for collider bias correction in conditional genome-wide association studies.",
+        "Nature Communications", "13 (619).",
+        "https://doi.org/10.1038/s41467-022-28119-9"))
