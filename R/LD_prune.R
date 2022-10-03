@@ -15,10 +15,8 @@ download_plink <- function() {
 
   if(!file.exists(destfile)) {
     # Get the full URL to download the executable file
-
-    # urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/master/plink_binaries/"   # To be activated after PR
-    urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/dev_1.0.0/plink_binaries/"
-
+    # urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/dev_1.0.0/plink_binaries/"  # Link for dev stage
+    urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/master/plink_binaries/"
     urlfull <- paste0(urlpref, os, "/", exename)
     err <- try(download.file(url = urlfull, destfile = destfile))
     if (!inherits(err, "try-error")) {
