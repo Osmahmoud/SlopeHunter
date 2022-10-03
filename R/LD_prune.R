@@ -1,3 +1,100 @@
+#' Check and download PLINK 1.90 executable suitable for the operating system, and return its path
+#' Inspired by https://github.com/MRCIEU/genetics.binaRies
+#' @importFrom utils download.file
+download_plink <- function() {
+  # Identify operating system
+  os <- Sys.info()[["sysname"]]
+  # Identify the target executable based on os
+  exename <- ifelse(os == "Windows", "plink.exe", "plink")
+  # Initiate a destination directory in which the executable will be stored
+  dest <- file.path(system.file(package = "SlopeHunter"), "bin")
+  # Create bin folder in the package directory and download specified executable into it (if not exist)
+  if (!dir.exists(dest)) dir.create(dest)
+  # Full path of the executable file after downloaded
+  destfile <- file.path(dest, exename)
+
+  if(!file.exists(destfile)) {
+    # Get the full URL to download the executable file
+
+    # urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/master/plink_binaries/"   # To be activated after PR
+    urlpref <- "https://github.com/Osmahmoud/SlopeHunter/raw/dev_1.0.0/plink_binaries/"
+
+    urlfull <- paste0(urlpref, os, "/", exename)
+    err <- try(download.file(url = urlfull, destfile = destfile))
+    if (!inherits(err, "try-error")) {
+      message("PLINK 1.90 executable has been downloaded successifully.")
+
+      # If Unix/Linux, Set mode to allow execute plink
+      if(os != "Windows") {
+        Chmod_command <- paste0("chmod 755 ", shQuote(destfile, type="sh"))
+        system(Chmod_command)
+      }
+
+    } else {
+      stop("PLINK 1.90 executable couldn't be downlaoded!")
+    }
+
+  } else {
+    message("PLINK executable is already available on your local system and will be used for clumping.")
+  }
+
+  return(destfile)
+}
+
+
+#' clump function using local plink binary and ld reference dataset
+#' This function is modified from: https://github.com/MRCIEU/ieugwasr/blob/master/R/ld_clump.R
+#' @param dat Dataframe. Must have a variant name column (`rsid`) and pval column called (`pval`).
+#' @param clump_kb Clumping window, default is `250`.
+#' @param clump_r2 Clumping r-squared threshold, default is `0.1`.
+#' @param Random Logical, if `TRUE` (the default), SNPs will be randomly pruned. Otherwise, based on p-values.
+#' @param clump_p1 Clumping sig level for index SNPs, default is `1`.
+#' @importFrom data.table fwrite data.table fread
+#'
+ld_local <- function(dat, clump_kb=250, clump_r2=0.1, clump_p1=1, bfile) {
+  # Identify operating system
+  os <- Sys.info()[["sysname"]]
+  shell <- ifelse(os == "Windows", "cmd", "sh")
+
+  # create input text file for PLINK from dat
+  Input <- tempfile()
+  data.table::fwrite(data.table::data.table(SNP=dat$rsid, P=dat$pval), file=Input, quote=FALSE, sep = " ")
+
+  # get path to the executable PLINK or download it and return its path
+  plink_bin = download_plink()
+
+  # make PLINK command
+  PLINK_command <- paste0(
+    shQuote(plink_bin, type=shell),
+    " --bfile ", shQuote(bfile, type=shell),
+    " --clump ", shQuote(Input, type=shell),
+    " --clump-p1 ", clump_p1,
+    " --clump-r2 ", clump_r2,
+    " --clump-kb ", clump_kb,
+    " --out ", shQuote(Input, type=shell)
+  )
+
+  # run PLINK
+  system(PLINK_command)
+
+  # Extract clumped SNPs
+  Output <- data.table::fread(file = paste0(Input, ".clumped"), header = TRUE)
+
+  # clean
+  message("cleaning ...")
+  unlink(paste0(Input, "*"))
+
+  # Get pruned SNPs
+  Pruned <- dat[dat$rsid %in% Output$SNP, ]
+
+  RM <- nrow(dat) - nrow(Pruned)
+  if(nrow(Pruned) > 0) {
+    message("Removing ", RM, " of ", nrow(dat), " variants due to LD with other variants or absence from LD reference panel ...")
+  }
+  return(Pruned)
+}
+
+
 #' Perform LD pruning on SNP data
 #'
 #' Uses PLINK clumping method ('--clump' command), where a greedy search algorithm is implemented to randomly select a variant
