@@ -90,7 +90,12 @@ help(slopehunter)
 
 # Citation
 
+Please do cite both the paper and the software for SlopeHunter as follows:
+
 > Mahmoud, O., Dudbridge, F., Davey Smith, G. et al. A robust method for collider bias correction in conditional genome-wide association studies. Nature Communications 13, 619 (2022). (doi: <https://doi.org/10.1038/s41467-022-28119-9>)
+
+Note: in the citation below, replace the *<X.Y.Z>* with the version you have used, and the *(20XX)* with the year in which that version was released.
+> Mahmoud, O. SlopeHunter: An R package for collider bias correction in conditional GWAS. V<X.Y.Z> (20XX). (doi: <https://doi.org/10.5281/zenodo.5617862>).
  
 # License
 
