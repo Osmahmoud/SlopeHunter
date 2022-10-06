@@ -1,8 +1,8 @@
 ---
 title: "Introduction to Slope-Hunter (Under Construction!)"
-subtitle: "An approach for collider bias correction in GWAS of subsequent traits"
+subtitle: "A robust method for collider bias correction in conditional genome-wide association studies"
 author: "Osama Mahmoud"
-date: "July 23, 2020"
+date: "October 06, 2022"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
@@ -17,20 +17,36 @@ editor_options:
 
 Some useful links are as follows:
 
- [Pre-print of the manuscript](https://www.biorxiv.org/content/10.1101/2020.01.31.928077v1)
+ - [The manuscript published in Nature Communications](https://www.nature.com/articles/s41467-022-28119-9)
  
- [R package source](https://github.com/Osmahmoud/Slope-Hunter)
+ - [DOI of the software](https://doi.org/10.5281/zenodo.5617862)
+
+ - [R package source](https://github.com/Osmahmoud/SlopeHunter)
  
- [Website of the corresponding author](http://osmahmoud.com/)
+ - [Website of the corresponding author](http://osmahmoud.com/)
  
  This website layout was inspired by the layout of the [CAUSE website](https://jean997.github.io/cause/index.html).
 
 # Introduction to Slope-Hunter
 
-Studying genetic associations with prognosis (e.g. survival, disability, subsequent disease events) is
-problematic due to selection bias - also termed index event bias or collider bias - whereby selection
+Studying genetic associations with prognosis (e.g., survival, disability, subsequent disease events) or conditional on a phenotype (e.g., disease incidence) may be affected by selection bias - also termed index event bias or collider bias - whereby selection
 on disease status can induce associations between causes of incidence with prognosis.
 
-The ‘Slope-Hunter’ approach is proposed for adjusting genetic associations for this bias. The approach is unbiased even when there is genetic correlation between incidence and prognosis.
+The [‘Slope-Hunter’ approach](https://www.nature.com/articles/s41467-022-28119-9) is proposed for adjusting genetic associations for this bias. The approach is unbiased even when there is genetic correlation between incidence and prognosis.
 
-Our approach has two stages. First, cluster-based techniques are used to identify: variants affecting neither incidence nor prognosis (these should not suffer bias and only a random sub-sample of them are retained in the analysis); variants affecting prognosis only (excluded from the analysis). Second, we fit a cluster-based model to identify the class of variants only affecting incidence, and use this class to estimate the adjustment factor.
+Our approach uses advanced machine learning techniques such as unsupervised model-based clustering tailored to theoretical distributions of genetic effects on incidence and prognosis. The [‘Slope-Hunter’ method](https://www.nature.com/articles/s41467-022-28119-9) identifies and utilises the cluster of genetic variants only affecting incidence to estimate an unbiased adjustment factor for collider bias correction even in the presence genetic correlations (e.g., shared genetic pathways as typically observed for many traits including metabolites, cancer risk factors, psychiatric phenotype). The [‘Slope-Hunter’ approach](https://www.nature.com/articles/s41467-022-28119-9) assumes the identified cluster of variants only affecting incidence explains more variation in incidence than any other variant clusters.
+
+# What does this website provide?
+
+ - [An easy-to-follow practical tutorial on how to implenment the method](tutorial.html)
+ 
+ - To Appear: Gallery of corrected prognosis GWAS (e.g. disease progression). If you are interested to deposit your prognosis GWAS data after correction in the Slope-Hunter gallery, please do contact [Dr. Osama Mahmoud](http://osmahmoud.com/) on [o.mahmoud@essex.ac.uk](mailto:o.mahmoud@essex.ac.uk?subject="Slope-Hunter: Deposit corrected GWAS data")
+ 
+
+# How to cite this work
+
+If you use the [‘Slope-Hunter’ method](https://www.nature.com/articles/s41467-022-28119-9), please do consider to cite both the paper and the software as follows:
+
+ - Mahmoud, O., Dudbridge, F., Davey Smith, G. et al. A robust method for collider bias correction in conditional genome-wide association studies. Nature Communications 13, 619 (2022). ([doi: https://doi.org/10.1038/s41467-022-28119-9](https://doi.org/10.1038/s41467-022-28119-9)).
+ 
+ - Mahmoud, O. SlopeHunter: An R package for collider bias correction in conditional GWAS. V1.1.0. (2022). [doi: https://doi.org/10.5281/zenodo.5617862](https://doi.org/10.5281/zenodo.5617862).

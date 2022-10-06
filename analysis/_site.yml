@@ -15,9 +15,13 @@ navbar:
   - icon: fa-github
     text: Source code
     href: https://github.com/Osmahmoud/SlopeHunter
+  - icon: fa-bug
+    text: Issues
+    href: https://github.com/Osmahmoud/SlopeHunter/issues
   - icon: fa-file-text-o
     text: Manuscript
-    href: https://www.biorxiv.org/content/10.1101/2020.01.31.928077v1
+    href: https://www.nature.com/articles/s41467-022-28119-9
+
 output:
   workflowr::wflow_html:
     toc: yes
