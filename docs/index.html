@@ -11,7 +11,7 @@
 
 <meta name="author" content="Osama Mahmoud" />
 
-<meta name="date" content="2020-07-23" />
+<meta name="date" content="2022-10-06" />
 
 <title>Introduction to Slope-Hunter (Under Construction!)</title>
 
@@ -357,7 +357,14 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="https://www.biorxiv.org/content/10.1101/2020.01.31.928077v1">
+  <a href="https://github.com/Osmahmoud/SlopeHunter/issues">
+    <span class="fa fa-bug"></span>
+     
+    Issues
+  </a>
+</li>
+<li>
+  <a href="https://www.nature.com/articles/s41467-022-28119-9">
     <span class="fa fa-file-text-o"></span>
      
     Manuscript
@@ -374,10 +381,10 @@ div.tocify {
 
 <h1 class="title toc-ignore">Introduction to Slope-Hunter (Under
 Construction!)</h1>
-<h3 class="subtitle">An approach for collider bias correction in GWAS of
-subsequent traits</h3>
+<h3 class="subtitle">A robust method for collider bias correction in
+conditional genome-wide association studies</h3>
 <h4 class="author">Osama Mahmoud</h4>
-<h4 class="date">July 23, 2020</h4>
+<h4 class="date">October 06, 2022</h4>
 
 </div>
 
@@ -406,7 +413,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-10-03
+<strong>Last updated:</strong> 2022-10-06
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -453,15 +460,15 @@ results.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomOsmahmoudSlopeHuntertree324ae85d7db9838c2a002215bc3a68bcafa84580targetblank324ae85a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomOsmahmoudSlopeHuntertreea4db1f05dfa7a1641f410c57a442acdb32744eb2targetblanka4db1f0a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/Osmahmoud/SlopeHunter/tree/324ae85d7db9838c2a002215bc3a68bcafa84580" target="_blank">324ae85</a>
+<a href="https://github.com/Osmahmoud/SlopeHunter/tree/a4db1f05dfa7a1641f410c57a442acdb32744eb2" target="_blank">a4db1f0</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomOsmahmoudSlopeHuntertree324ae85d7db9838c2a002215bc3a68bcafa84580targetblank324ae85a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomOsmahmoudSlopeHuntertreea4db1f05dfa7a1641f410c57a442acdb32744eb2targetblanka4db1f0a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -471,7 +478,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/Osmahmoud/SlopeHunter/tree/324ae85d7db9838c2a002215bc3a68bcafa84580" target="_blank">324ae85</a>.
+<a href="https://github.com/Osmahmoud/SlopeHunter/tree/a4db1f05dfa7a1641f410c57a442acdb32744eb2" target="_blank">a4db1f0</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -490,10 +497,6 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    R/.DS_Store
-    Ignored:    plink_binaries/.DS_Store
-    Ignored:    plink_binaries/Darwin/.DS_Store
-    Ignored:    plink_binaries/Linux/.DS_Store
-    Ignored:    plink_binaries/Windows/.DS_Store
 
 </code></pre>
 <p>
@@ -538,6 +541,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/Osmahmoud/SlopeHunter/blob/ce85b5777c8cc30dc1e66d99c1a0a5a0c9122d6d/analysis/index.Rmd" target="_blank">ce85b57</a>
+</td>
+<td>
+Osama Mahmoud
+</td>
+<td>
+2022-10-06
+</td>
+<td>
+Updated workflow and the Github Readme
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/Osmahmoud/SlopeHunter/01c13a135ccf4701f85e5acda62f2aa80b719ec6/docs/index.html" target="_blank">01c13a1</a>
+</td>
+<td>
+Osama Mahmoud
+</td>
+<td>
+2022-10-03
+</td>
+<td>
+Build with No Err/War/Notes
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -854,33 +891,76 @@ Start workflowr project.
 <div id="welcome-to-slope-hunter-website" class="section level1">
 <h1>Welcome to Slope-Hunter website!</h1>
 <p>Some useful links are as follows:</p>
-<p><a
-href="https://www.biorxiv.org/content/10.1101/2020.01.31.928077v1">Pre-print
-of the manuscript</a></p>
-<p><a href="https://github.com/Osmahmoud/Slope-Hunter">R package
-source</a></p>
-<p><a href="http://osmahmoud.com/">Website of the corresponding
-author</a></p>
+<ul>
+<li><p><a href="https://www.nature.com/articles/s41467-022-28119-9">The
+manuscript published in Nature Communications</a></p></li>
+<li><p><a href="https://doi.org/10.5281/zenodo.5617862">DOI of the
+software</a></p></li>
+<li><p><a href="https://github.com/Osmahmoud/SlopeHunter">R package
+source</a></p></li>
+<li><p><a href="http://osmahmoud.com/">Website of the corresponding
+author</a></p></li>
+</ul>
 <p>This website layout was inspired by the layout of the <a
 href="https://jean997.github.io/cause/index.html">CAUSE website</a>.</p>
 </div>
 <div id="introduction-to-slope-hunter" class="section level1">
 <h1>Introduction to Slope-Hunter</h1>
-<p>Studying genetic associations with prognosis (e.g. survival,
-disability, subsequent disease events) is problematic due to selection
-bias - also termed index event bias or collider bias - whereby selection
-on disease status can induce associations between causes of incidence
-with prognosis.</p>
-<p>The ‘Slope-Hunter’ approach is proposed for adjusting genetic
-associations for this bias. The approach is unbiased even when there is
-genetic correlation between incidence and prognosis.</p>
-<p>Our approach has two stages. First, cluster-based techniques are used
-to identify: variants affecting neither incidence nor prognosis (these
-should not suffer bias and only a random sub-sample of them are retained
-in the analysis); variants affecting prognosis only (excluded from the
-analysis). Second, we fit a cluster-based model to identify the class of
-variants only affecting incidence, and use this class to estimate the
-adjustment factor.</p>
+<p>Studying genetic associations with prognosis (e.g., survival,
+disability, subsequent disease events) or conditional on a phenotype
+(e.g., disease incidence) may be affected by selection bias - also
+termed index event bias or collider bias - whereby selection on disease
+status can induce associations between causes of incidence with
+prognosis.</p>
+<p>The <a
+href="https://www.nature.com/articles/s41467-022-28119-9">‘Slope-Hunter’
+approach</a> is proposed for adjusting genetic associations for this
+bias. The approach is unbiased even when there is genetic correlation
+between incidence and prognosis.</p>
+<p>Our approach uses advanced machine learning techniques such as
+unsupervised model-based clustering tailored to theoretical
+distributions of genetic effects on incidence and prognosis. The <a
+href="https://www.nature.com/articles/s41467-022-28119-9">‘Slope-Hunter’
+method</a> identifies and utilises the cluster of genetic variants only
+affecting incidence to estimate an unbiased adjustment factor for
+collider bias correction even in the presence genetic correlations
+(e.g., shared genetic pathways as typically observed for many traits
+including metabolites, cancer risk factors, psychiatric phenotype). The
+<a
+href="https://www.nature.com/articles/s41467-022-28119-9">‘Slope-Hunter’
+approach</a> assumes the identified cluster of variants only affecting
+incidence explains more variation in incidence than any other variant
+clusters.</p>
+</div>
+<div id="what-does-this-website-provide" class="section level1">
+<h1>What does this website provide?</h1>
+<ul>
+<li><p><a href="tutorial.html">An easy-to-follow practical tutorial on
+how to implenment the method</a></p></li>
+<li><p>To Appear: Gallery of corrected prognosis GWAS (e.g. disease
+progression). If you are interested to deposit your prognosis GWAS data
+after correction in the Slope-Hunter gallery, please do contact <a
+href="http://osmahmoud.com/">Dr. Osama Mahmoud</a> on <a
+href="mailto:o.mahmoud@essex.ac.uk?subject=%22Slope-Hunter:%20Deposit%20corrected%20GWAS%20data%22">o.mahmoud@essex.ac.uk</a></p></li>
+</ul>
+</div>
+<div id="how-to-cite-this-work" class="section level1">
+<h1>How to cite this work</h1>
+<p>If you use the <a
+href="https://www.nature.com/articles/s41467-022-28119-9">‘Slope-Hunter’
+method</a>, please do consider to cite both the paper and the software
+as follows:</p>
+<ul>
+<li><p>Mahmoud, O., Dudbridge, F., Davey Smith, G. et al. A robust
+method for collider bias correction in conditional genome-wide
+association studies. Nature Communications 13, 619 (2022). (<a
+href="https://doi.org/10.1038/s41467-022-28119-9">doi:
+https://doi.org/10.1038/s41467-022-28119-9</a>).</p></li>
+<li><p>Mahmoud, O. SlopeHunter: An R package for collider bias
+correction in conditional GWAS. V1.1.0. (2022). <a
+href="https://doi.org/10.5281/zenodo.5617862">doi:
+https://doi.org/10.5281/zenodo.5617862</a>.</p></li>
+</ul>
 </div>
 
 
