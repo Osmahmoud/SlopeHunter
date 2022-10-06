@@ -194,8 +194,8 @@ harmonise_dataset <- function(dat)
   # Extract the ID cols, then arrange the harmonised data
   dat <- dat[, cols, with = FALSE]
   dat <- dat[, ':='(EA.incidence=A1, OA.incidence=A2, EA.prognosis=B1, OA.prognosis=B2,
-                    BETA.incidence=betaA, SE.incidence=seA, Pval.incidence=pA, EAF.incidence=fA,
-                    BETA.prognosis=betaB, SE.prognosis=seB, Pval.prognosis=pB, EAF.prognosis=fB,
+                    BETA.incidence=betaA, SE.incidence=seA, PVAL.incidence=pA, EAF.incidence=fA,
+                    BETA.prognosis=betaB, SE.prognosis=seB, PVAL.prognosis=pB, EAF.prognosis=fB,
                     remove=remove, palindromic=palindromic)]
 
   attr(dat, "info") <- jinfo
