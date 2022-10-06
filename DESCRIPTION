@@ -1,7 +1,7 @@
 Package: SlopeHunter
 Type: Package
 Title: Slope-Hunter: A ROBUST METHOD FOR COLLIDER BIAS CORRECTION IN CONDITIONAL GENOME-WIDE ASSOCIATION STUDIES
-Version: 1.0.1
+Version: 1.1.0
 Date: 2022-09-27
 Author@R: person("Osama", "Mahmoud", email = "o.mahmoud@essex.ac.uk",
                  role = c("aut", "cre", "cph"),

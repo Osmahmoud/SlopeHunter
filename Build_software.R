@@ -3,7 +3,7 @@ library("workflowr")
 wflow_status()
 wflow_view()
 wflow_build()
-wflow_publish()
+# wflow_publish()  # No need if you have commited your changes e.g. using gitkraken
 # wflow_git_commit(all=TRUE)   You can use gitkraken anyway
 
 
