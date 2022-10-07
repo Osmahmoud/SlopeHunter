@@ -1,5 +1,5 @@
 ---
-title: "Software Tutorial (Under Construction!)"
+title: "Software Tutorial 1 (Under Construction!)"
 subtitle: "Implementation of the Slope-Hunter method on breast cancer progression"
 author: "Osama Mahmoud"
 date: "October 07, 2022"
@@ -13,15 +13,79 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Simulated Data
+# Software Installation
+
+## Requirements
+The **SlopeHunter** software does not require any special hardware. A standard computer suitable for most applications nowadays should be sufficient.
+
+`SlopeHunter` is written as an R package that requires `R (>= 3.5.0)` to be installed on your machine. If you do NOT have R installed, or you do have an older version of R installed on your machine, you would need to install the latest R version [from here](https://cloud.r-project.org/).
+
+The `SlopeHunter` R package depends on a few other R packages that will be automatically installed with `SlopeHunter` when you follow the installation guide below. A list of these R dependencies is [reported here](https://github.com/Osmahmoud/SlopeHunter#r-dependencies).
+
+## System Compatibility
+The `SlopeHunter` software is compatible with *Windows*, *Linux* and *macOS*. The package has been tested in R under the following systems:
+
+-   Linux: Ubuntu 16.04 (R 4.0.4)
+-   macOS: Monterey 12.3 (R 4.2)
+-   Windows: 10 (R 4.2)
+
+## Installation Guide
+To install the `SlopeHunter` R package, simply run
+
+```{r, eval=FALSE}
+# required only once per machine!
+devtools::install_github("Osmahmoud/SlopeHunter")
+```
+
+# Reading Data
+We are going to use data on ... (GIVE DESCRIPTION on BCa DATA)
+
+
+
+
+
+
+
+First, you need to load the `SlopeHunter` package:
+
+```{r}
+require(SlopeHunter)
+```
+
+
+
+## Reading in the incidence GWAS
+
+```{r}
+BCa_incidence <- SlopeHunter::read_incidence(filename = "Your-incidence-data-file.gz",
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Install the *SlopeHunter* R package by following the installation instructions described [here](https://github.com/Osmahmoud/SlopeHunter).
+
+Slope-Hunter
 
 Report tutorials on the simulated data here ...
 
 # Applied Data Analysis
 ***Example: Fasting Insulin adjusted for BMI***
 
-## Install Slope-Hunter
-Follow the installation instructions described [here](https://github.com/Osmahmoud/Slope-Hunter).
+## 
+
 
 ## Format Data for Slope-Hunter Analysis
 First, you need to load the `Slope-Hunter` R package:

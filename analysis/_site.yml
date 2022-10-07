@@ -5,8 +5,14 @@ navbar:
   left:
   - text: Home
     href: index.html
-  - text: Tutorial
-    href: tutorial.html
+  - text: "Tutorials"
+    menu:
+    - text: Breast cancer
+      href: Tut_BCa.html
+    - text: BMI-adjusted fasting insulin
+      href: tutorial.html
+    - text: Simulated data sets
+      href: tutorial.html
   - text: About
     href: about.html
   - text: License

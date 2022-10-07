@@ -46,8 +46,9 @@ The `SlopeHunter` R package dependens on the following R packages:
     plotly
     stats
     ieugwasr
-    data.table
+    data.table (>= 1.14.2)
     dplyr
+    tools
 
 # Installation Guide:
 

@@ -2,7 +2,7 @@
 title: "Introduction to Slope-Hunter (Under Construction!)"
 subtitle: "A robust method for collider bias correction in conditional genome-wide association studies"
 author: "Osama Mahmoud"
-date: "October 06, 2022"
+date: "October 07, 2022"
 site: workflowr::wflow_site
 output:
   workflowr::wflow_html:
